@@ -28,7 +28,7 @@ class UserController extends Controller
         $response = $users->map(function ($user, $index) {
             $actionUpdate = '<button onclick="update(' . "'" . $user->id . "'" . ')" type="button" title="Update" class="btn btn-secondary"><i class="fas fa-edit"></i></button>';
             $actionDelete = '<button onclick="trash(' . "'" . $user->id . "'" . ')" type="button" title="Delete" class="btn btn-danger"><i class="fas fa-trash"></i></button>';
-            $action = $actionUpdate . $actionDelete;
+            $action = '<div class="d-flex align-items-center">' . $actionUpdate . '&nbsp;' . $actionDelete . '</div>';
 
             return [
                 'count' => $index + 1,

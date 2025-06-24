@@ -118,7 +118,7 @@ class TransactionController extends Controller
                 'approve_quantity' => $transaction->approve_quantity,
                 'date_of_usage' => $transaction->date_of_usage->format('Y-m-d'),
                 'date_of_return' => $transaction->date_of_return->format('Y-m-d'),
-                'time_of_return' => $transaction->time_of_return,
+                'time_of_return' => date('H:i A', strtotime($transaction->time_of_return)),
                 'status' => $transaction->status,
                 'created_at' => $transaction->created_at->format('Y-m-d H:i:s'),
                 'action' => $actions,
@@ -263,8 +263,8 @@ class TransactionController extends Controller
                 'user_id' => 'required|exists:users,id',
                 'reserve_quantity' => 'required|integer|min:1',
                 'date_of_usage' => 'required|date|after_or_equal:today',
-                'date_of_return' => 'required|date|after:date_of_usage',
-                'time_of_return' => 'required|date_format:H:i:s',
+                'date_of_return' => 'required|date',
+                'time_of_return' => 'required|date_format:H:i',
             ], [
                 'item_id.required' => 'Item is required.',
                 'item_id.exists' => 'Selected item does not exist.',
@@ -278,7 +278,7 @@ class TransactionController extends Controller
                 'date_of_usage.after_or_equal' => 'Date of usage must be today or later.',
                 'date_of_return.required' => 'Date of return is required.',
                 'date_of_return.date' => 'Invalid date of return.',
-                'date_of_return.after' => 'Date of return must be after date of usage.',
+                // 'date_of_return.after' => 'Date of return must be after date of usage.',
                 'time_of_return.required' => 'Time of return is required.',
                 'time_of_return.date_format' => 'Time of return must be in HH:MM format.',
             ]);

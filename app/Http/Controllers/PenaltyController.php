@@ -9,15 +9,27 @@ class PenaltyController extends Controller
 {
     public function fetchData()
     {
-        $penalties = TransactionPenalty::with([
+        $user = auth()->user();
+
+        $penaltiesQuery = TransactionPenalty::with([
             'user',
-            'item',
-            'item.category',
-            'transaction.item',
-            'transaction.user',
-            'transaction.item.category',
-            'transaction.item.category.laboratory' // if nested like this
-        ])->get();
+            'item.category.laboratory',
+            'transaction.user'
+        ]);
+
+        if (in_array($user->user_role, ['Laboratory Head', 'Laboratory In-charge'])) {
+            // Show only penalties for items that belong to their laboratory
+            $penaltiesQuery->whereHas('item.category.laboratory', function ($query) use ($user) {
+                $query->where('id', $user->laboratory_id);
+            });
+        } elseif ($user->user_role === 'Employee') {
+            // Show penalties for transactions made by this employee
+            $penaltiesQuery->whereHas('transaction', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+
+        $penalties = $penaltiesQuery->get();
 
         $data = $penalties->map(function ($penalty, $index) {
             return [
@@ -33,4 +45,5 @@ class PenaltyController extends Controller
 
         return response()->json($data);
     }
+
 }

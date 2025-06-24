@@ -64,7 +64,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link @yield('active-penalties')">
+                    <a href="{{ route('viewStaffPenalty') }}" class="nav-link @yield('active-penalties')">
                         <i class="nav-icon fas fa-exclamation-triangle"></i>
                         <p>Penalties</p>
                     </a>

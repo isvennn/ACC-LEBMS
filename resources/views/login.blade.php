@@ -26,18 +26,38 @@
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
-        html,body{
-            display: left;
-            height: 100%;
-            width: 100%;
-            place-items: right;
-            justify-items: right;
-            padding: 50px 50px 30px 30px;
-            background: url('dist/img/background.png') no-repeat center center;
-            background-size: cover;
-            height: 100vh;
-        }
-        ::selection{
+    html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    background: url('dist/img/background.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+        .form-container-wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-end; /* aligns to the right */
+    align-items: center;       /* centers vertically */
+    padding-right: 60px;       /* adjust distance from right edge */
+}
+.wrapper {
+    overflow: hidden;
+    max-width: 390px;
+    width: 100%;
+    background: #05b0c0;
+    padding: 30px;
+    border-radius: 5px;
+    box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+    min-height: 450px; /* ✅ sets a nice minimum height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+       ::selection{
             background: #fa4299;
             color: #fff;
         }
@@ -239,6 +259,7 @@
 
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <!-- Main Section -->
+    <div class="form-container-wrapper">
     <div class="wrapper">
          <div class="title-text">
             <div class="title login">
@@ -269,7 +290,7 @@
                 </div>
                 <div class="form-links">
                     <span><a href="/register">Register</a></span>
-                    <span><a href="#">Forgot password</a></span>
+                    <!-- <span><a href="#">Forgot password</a></span> -->
                 </div>
                </form>
             </div>

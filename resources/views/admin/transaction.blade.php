@@ -9,9 +9,6 @@
     active
 @endsection
 @section('APP-CSS')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css"
-        integrity="sha512-yVvx4LsuVZuF2j7a01Tlyh+nbuV9uT7yqH1P+XBQ2/3TJsMxe+2MVKvy+1/TOvtF2Ah9h3bG1JPCQKyH3M2kJ1A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .modal-content {
             border-radius: 8px;
@@ -155,9 +152,6 @@
     @include('modal.return_transaction')
 @endsection
 @section('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"
-        integrity="sha512-rMGGF6KMRfF6W5l1v64XzAgDxLusF6B3TD1F3anE2g8vH5f6kEA/hyj0m1d3nOhr0W7U4F2ZQzQ3OWZTwkZOhgA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="text/javascript">
         var transactionID, table1;
         let rowCount = 1;

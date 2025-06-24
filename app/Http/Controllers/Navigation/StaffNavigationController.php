@@ -34,6 +34,11 @@ class StaffNavigationController extends Controller
         return view('staff.inventory');
     }
 
+    public function penalties(): View
+    {
+        return view('staff.penalty');
+    }
+
     public function report(): View
     {
         $users = User::whereIn('user_role', ['Borrower', 'Employee'])->get();

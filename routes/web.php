@@ -65,6 +65,8 @@ Route::prefix('staff')->middleware(CheckRole::class)->group(function () {
     // Inventory
     Route::get('inventory', [StaffNavigationController::class, 'inventory'])->name('viewStaffInventory');
     // Report
+    Route::get('penalties', [StaffNavigationController::class, 'penalties'])->name('viewStaffPenalty');
+    // Report
     Route::get('report', [StaffNavigationController::class, 'report'])->name('viewStaffReport');
 });
 
