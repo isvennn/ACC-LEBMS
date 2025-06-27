@@ -3,7 +3,7 @@
     Dashboard
 @endsection
 @section('app-title')
-    Admin Dashboard
+    Borrower Dashboard
 @endsection
 @section('active-dashboard')
     active

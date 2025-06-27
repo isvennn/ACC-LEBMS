@@ -210,20 +210,20 @@
                         data: 'action'
                     },
                 ],
-                dom: '<"d-flex justify-content-between align-items-center"<"search-box"f>>rtip',
-                // dom: '<"d-flex justify-content-between align-items-center"<"search-box"f><"custom-button"B>>rtip',
-                // buttons: [{
-                //     text: '<i class="fa fa-plus-circle"></i> Add New',
-                //     className: 'btn btn-primary btn-md',
-                //     action: function(e, dt, node, config) {
-                //         $('#addModal').modal({
-                //             backdrop: 'static',
-                //             keyboard: false,
-                //             show: true
-                //         });
-                //         $('#addForm').trigger('reset');
-                //     }
-                // }],
+                // dom: '<"d-flex justify-content-between align-items-center"<"search-box"f>>rtip',
+                dom: '<"d-flex justify-content-between align-items-center"<"search-box"f><"custom-button"B>>rtip',
+                buttons: [{
+                    text: '<i class="fa fa-plus-circle"></i> Add New',
+                    className: 'btn btn-primary btn-md',
+                    action: function(e, dt, node, config) {
+                        $('#addModal').modal({
+                            backdrop: 'static',
+                            keyboard: false,
+                            show: true
+                        });
+                        $('#addForm').trigger('reset');
+                    }
+                }],
             });
 
             $("#addForm").validate({

@@ -268,7 +268,9 @@
          </div>
          <div class="form-container">
             <div class="form-inner">
-                <form id="loginForm">
+                <form id="loginForm" action="{{ route('login') }}">
+                    @csrf
+                    
                 <div id="response-msg"></div>
                    <div class="form-outline mb-2">
                     <label class="form-label" for="login">Email or Username <span

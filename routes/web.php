@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('login');
 })->name('loginPage')->middleware(RedirectIfAuthenticated::class);
+// Route::get('/login', function () {
+//     return view('login');
+// })->name('login')->middleware(RedirectIfAuthenticated::class);
+Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::get('/register', function () {
     return view('register');

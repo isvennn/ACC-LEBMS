@@ -118,7 +118,10 @@ class TransactionController extends Controller
                 'approve_quantity' => $transaction->approve_quantity,
                 'date_of_usage' => $transaction->date_of_usage->format('Y-m-d'),
                 'date_of_return' => $transaction->date_of_return->format('Y-m-d'),
-                'time_of_return' => date('H:i A', strtotime($transaction->time_of_return)),
+                // 'time_of_return' => date('H:i A', strtotime($transaction->time_of_return)),
+                // 'time_of_return' => date('h:i A', strtotime($transaction->time_of_return)),
+                // 'time_of_return' => date('H:i A', strtotime($transaction->time_of_return)),
+                'time_of_return' => date('h:i A', strtotime($transaction->time_of_return)),
                 'status' => $transaction->status,
                 'created_at' => $transaction->created_at->format('Y-m-d H:i:s'),
                 'action' => $actions,
@@ -145,7 +148,9 @@ class TransactionController extends Controller
                 'items.*.reserve_quantity' => 'required|integer|min:1',
                 'items.*.date_of_usage' => 'required|date|after_or_equal:today',
                 'items.*.date_of_return' => 'required|date',
-                'items.*.time_of_return' => 'required|date_format:H:i',
+                // 'items.*.time_of_return' => 'required|date_format:H:i',
+                'items.*.time_of_return' => 'required|date_format:h:i',
+                
             ], [
                 'user_id.required' => 'The user field is required.',
                 'user_id.exists' => 'The selected user is invalid.',
@@ -165,6 +170,7 @@ class TransactionController extends Controller
                 // 'items.*.date_of_return.after' => 'The date of return must be after the date of usage.',
                 'items.*.time_of_return.required' => 'The time of return is required for each item.',
                 'items.*.time_of_return.date_format' => 'The time of return must be in HH:MM format.',
+                // 'items.*.time_of_return.date_format' => 'The time of return must be in 24-hour HH:MM format (e.g. 14:30).',
             ]);
 
             $year = date('Y');
@@ -258,13 +264,15 @@ class TransactionController extends Controller
             $originalReserveQuantity = $transaction->reserve_quantity;
             $originalItemId = $transaction->item_id;
 
+            $request->time_of_return = date('H:i', strtotime($request->time_of_return));
+
             $validated = $request->validate([
                 'item_id' => 'required|exists:items,id',
                 'user_id' => 'required|exists:users,id',
                 'reserve_quantity' => 'required|integer|min:1',
                 'date_of_usage' => 'required|date|after_or_equal:today',
                 'date_of_return' => 'required|date',
-                'time_of_return' => 'required|date_format:H:i',
+                // 'time_of_return' => 'required|date_format:H:i',
             ], [
                 'item_id.required' => 'Item is required.',
                 'item_id.exists' => 'Selected item does not exist.',
