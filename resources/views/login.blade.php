@@ -20,67 +20,79 @@
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     <style>
         @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
-        *{
+
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
-    html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100vh;
-    background: url('dist/img/background.png') no-repeat center center fixed;
-    background-size: cover;
-}
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            background: url('dist/img/background.png') no-repeat center center fixed;
+            background-size: cover;
+        }
 
         .form-container-wrapper {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: flex-end; /* aligns to the right */
-    align-items: center;       /* centers vertically */
-    padding-right: 60px;       /* adjust distance from right edge */
-}
-.wrapper {
-    overflow: hidden;
-    max-width: 390px;
-    width: 100%;
-    background: #05b0c0;
-    padding: 30px;
-    border-radius: 5px;
-    box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
-    min-height: 450px; /* ✅ sets a nice minimum height */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: flex-end;
+            /* aligns to the right */
+            align-items: center;
+            /* centers vertically */
+            padding-right: 60px;
+            /* adjust distance from right edge */
+        }
 
-       ::selection{
+        .wrapper {
+            overflow: hidden;
+            max-width: 390px;
+            width: 100%;
+            background: #05b0c0;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.1);
+            min-height: 450px;
+            /* ✅ sets a nice minimum height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        ::selection {
             background: #fa4299;
             color: #fff;
         }
-        .wrapper{
+
+        .wrapper {
             overflow: hidden;
             max-width: 390px;
             background: #05b0c0;
             padding: 30px;
             border-radius: 5px;
-            box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+            box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.1);
         }
-        .wrapper .title-text{
+
+        .wrapper .title-text {
             display: flex;
             width: 200%;
         }
-        .wrapper .title{
+
+        .wrapper .title {
             width: 50%;
             font-size: 35px;
             font-weight: 600;
             text-align: center;
-            transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-        .wrapper .slide-controls{
+
+        .wrapper .slide-controls {
             position: relative;
             display: flex;
             height: 50px;
@@ -91,7 +103,8 @@
             border: 1px solid lightgrey;
             border-radius: 5px;
         }
-        .slide-controls .slide{
+
+        .slide-controls .slide {
             height: 100%;
             width: 100%;
             color: #fff;
@@ -103,10 +116,12 @@
             z-index: 1;
             transition: all 0.6s ease;
         }
-        .slide-controls label.signup{
+
+        .slide-controls label.signup {
             color: #000;
         }
-        .slide-controls .slider-tab{
+
+        .slide-controls .slider-tab {
             position: absolute;
             height: 100%;
             width: 50%;
@@ -114,47 +129,58 @@
             z-index: 0;
             border-radius: 5px;
             background: -webkit-linear-gradient(left, #45b27a, #d2acbe);
-            transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-        input[type="radio"]{
+
+        input[type="radio"] {
             display: none;
         }
-        #signup:checked ~ .slider-tab{
+
+        #signup:checked~.slider-tab {
             left: 50%;
         }
-        #signup:checked ~ label.signup{
+
+        #signup:checked~label.signup {
             color: #fff;
             cursor: default;
             user-select: none;
         }
-        #signup:checked ~ label.login{
+
+        #signup:checked~label.login {
             color: #000;
         }
-        #login:checked ~ label.signup{
+
+        #login:checked~label.signup {
             color: #000;
         }
-        #login:checked ~ label.login{
+
+        #login:checked~label.login {
             cursor: default;
             user-select: none;
         }
-        .wrapper .form-container{
+
+        .wrapper .form-container {
             width: 100%;
             overflow: hidden;
         }
-        .form-container .form-inner{
+
+        .form-container .form-inner {
             display: flex;
             width: 200%;
         }
-        .form-container .form-inner form{
+
+        .form-container .form-inner form {
             width: 50%;
-            transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-        .form-inner form .field{
+
+        .form-inner form .field {
             height: 50px;
             width: 100%;
             margin-top: 20px;
         }
-        .form-inner form .field input{
+
+        .form-inner form .field input {
             height: 100%;
             width: 100%;
             outline: none;
@@ -165,53 +191,65 @@
             font-size: 17px;
             transition: all 0.3s ease;
         }
-        .form-inner form .field input:focus{
+
+        .form-inner form .field input:focus {
             border-color: #fc83bb;
-        /* box-shadow: inset 0 0 3px #fb6aae; */
+            /* box-shadow: inset 0 0 3px #fb6aae; */
         }
-        .form-inner form .field input::placeholder{
+
+        .form-inner form .field input::placeholder {
             color: #999;
             transition: all 0.3s ease;
         }
-        form .field input:focus::placeholder{
+
+        form .field input:focus::placeholder {
             color: #b3b3b3;
         }
-        .form-inner form .pass-link{
+
+        .form-inner form .pass-link {
             margin-top: 5px;
         }
-        .form-inner form .signup-link{
+
+        .form-inner form .signup-link {
             text-align: center;
             margin-top: 30px;
         }
+
         .form-inner form .pass-link a,
-        .form-inner form .signup-link a{
+        .form-inner form .signup-link a {
             color: #fa4299;
             text-decoration: none;
         }
+
         .form-inner form .pass-link a:hover,
-        .form-inner form .signup-link a:hover{
+        .form-inner form .signup-link a:hover {
             text-decoration: underline;
         }
-        form .btn{
+
+        form .btn {
             height: 50px;
             width: 100%;
             border-radius: 5px;
             position: relative;
             overflow: hidden;
         }
-        form .btn .btn-layer{
+
+        form .btn .btn-layer {
             height: 100%;
             width: 300%;
             position: absolute;
             left: -100%;
             background: -webkit-linear-gradient(right, #45b27a, #d2acbe, #45b27a, #d2acbe);
             border-radius: 5px;
-            transition: all 0.4s ease;;
+            transition: all 0.4s ease;
+            ;
         }
-        form .btn:hover .btn-layer{
+
+        form .btn:hover .btn-layer {
             left: 0;
         }
-        form .btn input[type="submit"]{
+
+        form .btn input[type="submit"] {
             height: 100%;
             width: 100%;
             z-index: 1;
@@ -225,6 +263,7 @@
             font-weight: 500;
             cursor: pointer;
         }
+
         /* Links styling */
         .form-links {
             display: flex;
@@ -242,7 +281,7 @@
         .form-links a:hover {
             color: #d71c1c;
         }
-     
+
 
         /* Media query for responsiveness */
         @media (max-width: 768px) {
@@ -260,44 +299,47 @@
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <!-- Main Section -->
     <div class="form-container-wrapper">
-    <div class="wrapper">
-         <div class="title-text">
-            <div class="title login">
-               Login Form
+        <div class="wrapper">
+            <div class="title-text">
+                <div class="title login">
+                    Login Form
+                </div>
             </div>
-         </div>
-         <div class="form-container">
-            <div class="form-inner">
-                <form id="loginForm" action="{{ route('login') }}">
-                    @csrf
-                    
-                <div id="response-msg"></div>
-                   <div class="form-outline mb-2">
-                    <label class="form-label" for="login">Email or Username <span
-                            class="text-danger">*</span></label>
-                    <input type="login" name="login" id="form1Example13" class="form-control form-control-lg" />
-                  </div>
+            <div class="form-container">
+                <div class="form-inner">
+                    <form id="loginForm" action="{{ route('login') }}">
+                        @csrf
 
-                <!-- Password input -->
-                <div class="form-outline mb-2">
-                    <label class="form-label" for="form1Example23">Password</label>
-                    <input type="password" name="password" id="form1Example23" class="form-control form-control-lg" />
+                        <div id="response-msg"></div>
+                        <div class="form-outline mb-2">
+                            <label class="form-label" for="login">Email or Username <span
+                                    class="text-danger">*</span></label>
+                            <input type="login" name="login" id="form1Example13"
+                                class="form-control form-control-lg" />
+                        </div>
+
+                        <!-- Password input -->
+                        <div class="form-outline mb-2">
+                            <label class="form-label" for="form1Example23">Password</label>
+                            <input type="password" name="password" id="form1Example23"
+                                class="form-control form-control-lg" />
+                        </div>
+                        <div class="field btn">
+                            <div class="btn-layer"></div>
+                            <input type="submit" value="Login">
+                        </div>
+                        <div class="mt-3 text-center">
+                            <p>Don't have an account yet?</p>
+                        </div>
+                        <div class="form-links">
+                            <span><a href="/register">Register</a></span>
+                            <span><a href="{{ route('password.request') }}">Forgot password</a></span>
+                        </div>
+                    </form>
                 </div>
-                  <div class="field btn">
-                     <div class="btn-layer"></div>
-                     <input type="submit" value="Login">
-                  </div>
-                   <div class="mt-3 text-center">
-                    <p>Don't have an account yet?</p>
-                </div>
-                <div class="form-links">
-                    <span><a href="/register">Register</a></span>
-                    <!-- <span><a href="#">Forgot password</a></span> -->
-                </div>
-               </form>
             </div>
-         </div>
-      </div>
+        </div>
+    </div>
 
     <!-- jQuery -->
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
@@ -330,16 +372,38 @@
                                 response.msg + '</div>');
                         }
                     },
-                    error: function(xhr, textStatus, error) {
-                        $('#response-msg').html(
-                            '<div class="alert alert-danger">Invalid credentials! Please try again.</div>'
-                        );
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            let messages = Object.values(errors).flat().join('<br>');
+                            $('#response-msg').html('<div class="alert alert-danger">' +
+                                messages + '</div>');
+                        } else if (xhr.status === 401 || xhr.status === 403 || xhr.status ===
+                            500) {
+                            $('#response-msg').html('<div class="alert alert-danger">' +
+                                xhr.responseJSON.msg + '</div>');
+                        }
                     }
                 });
             });
         });
 
-        
+        $('#forgotPasswordForm').submit(function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                method: 'POST',
+                url: '{{ route('password.email') }}',
+                data: $(this).serialize(),
+                success: function(response) {
+                    alert(response.message); // Show success
+                },
+                error: function(xhr) {
+                    const res = xhr.responseJSON;
+                    alert(res?.message || 'Error occurred');
+                }
+            });
+        });
     </script>
 </body>
 

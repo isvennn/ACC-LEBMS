@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\Transaction;
 use App\Models\TransactionStatus;
 use App\Models\TransactionPenalty;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -96,7 +97,31 @@ class TransactionController extends Controller
                         $actions = '<button type="button" title="Release" class="btn btn-primary" disabled>Item can\'t be released because the date of usage has not been met.</button>';
                     }
                 } elseif ($transaction->status === 'Released') {
-                    $actions = '<button onclick="returnTransaction(\'' . $transaction->id . '\')" type="button" title="Return" class="btn btn-warning"><i class="fas fa-undo"></i></button>';
+                    $returnDateTime = Carbon::parse(
+                        $transaction->getRawOriginal('date_of_return') . ' ' . $transaction->time_of_return
+                    );
+
+                    // Add grace period (e.g., 2 days)
+                    $gracePeriodDays = 2; // Adjust this value as needed
+                    $fineStartDateTime = $returnDateTime->copy()->addDays($gracePeriodDays);
+
+                    $now = now();
+                    $fine = 0;
+
+                    // Only calculate fine if current time is after the fine start date
+                    if ($now->greaterThan($fineStartDateTime)) {
+                        // Calculate hours late after grace period
+                        $hoursLate = $fineStartDateTime->diffInHours($now); // Reverse order to ensure positive value
+                        $fine = $hoursLate * 5; // 5 currency units per hour late
+                    }
+
+                    Log::info('Fine: ' . $fine . ', Now: ' . $now->toDateTimeString() . ', FineStartDateTime: ' . $fineStartDateTime->toDateTimeString());
+
+                    $fineText = $fine > 0
+                        ? '<span class="text-danger ml-2">Fine: ₱' . number_format($fine, 2) . '</span>'
+                        : '';
+
+                    $actions = '<button onclick="returnTransaction(' . "'" . $transaction->id . "','" . $fine . "'" . ')" type="button" title="Return" class="btn btn-warning"><i class="fas fa-undo"></i> ' . $fineText . '</button>';
                 } elseif (in_array($transaction->status, ['Rejected', 'Cancelled'])) {
                     // $actions = '
                     //     <button type="button" title="Edit" class="btn btn-secondary" disabled><i class="fas fa-edit"></i></button>
@@ -148,9 +173,7 @@ class TransactionController extends Controller
                 'items.*.reserve_quantity' => 'required|integer|min:1',
                 'items.*.date_of_usage' => 'required|date|after_or_equal:today',
                 'items.*.date_of_return' => 'required|date',
-                // 'items.*.time_of_return' => 'required|date_format:H:i',
-                'items.*.time_of_return' => 'required|date_format:h:i',
-                
+                'items.*.time_of_return' => 'required|date_format:H:i', // <-- Fixed
             ], [
                 'user_id.required' => 'The user field is required.',
                 'user_id.exists' => 'The selected user is invalid.',
@@ -167,10 +190,8 @@ class TransactionController extends Controller
                 'items.*.date_of_usage.after_or_equal' => 'The date of usage must be today or later.',
                 'items.*.date_of_return.required' => 'The date of return is required for each item.',
                 'items.*.date_of_return.date' => 'The date of return must be a valid date.',
-                // 'items.*.date_of_return.after' => 'The date of return must be after the date of usage.',
                 'items.*.time_of_return.required' => 'The time of return is required for each item.',
-                'items.*.time_of_return.date_format' => 'The time of return must be in HH:MM format.',
-                // 'items.*.time_of_return.date_format' => 'The time of return must be in 24-hour HH:MM format (e.g. 14:30).',
+                'items.*.time_of_return.date_format' => 'The time of return must be in 24-hour HH:MM format (e.g. 14:30).',
             ]);
 
             $year = date('Y');
@@ -527,6 +548,86 @@ class TransactionController extends Controller
     /**
      * Return a transaction.
      */
+    // public function returnTransaction(Request $request, $id): JsonResponse
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $transaction = Transaction::findOrFail($id);
+    //         if ($transaction->status !== 'Released') {
+    //             throw new \Exception('Only released transactions can be returned.');
+    //         }
+
+    //         $item = Item::findOrFail($transaction->item_id);
+
+    //         $validated = $request->validate([
+    //             'returns' => 'required|array|min:1',
+    //             'returns.*.return_status' => 'required|in:Good,Lost,Damaged,For Repair,For Disposal',
+    //             'returns.*.quantity' => 'required|integer|min:1',
+    //             'returns.*.penalty_remarks' => 'nullable|in:Replace,Pay',
+    //         ]);
+
+    //         // Validate total quantity
+    //         $totalReturnQuantity = array_sum(array_column($validated['returns'], 'quantity'));
+    //         if ($totalReturnQuantity !== $transaction->approve_quantity) {
+    //             throw ValidationException::withMessages([
+    //                 'returns' => "Total return quantity ($totalReturnQuantity) must equal approved quantity ({$transaction->approve_quantity}).",
+    //             ]);
+    //         }
+
+    //         // Process each return status
+    //         foreach ($validated['returns'] as $return) {
+    //             if ($return['return_status'] === 'Good') {
+    //                 $item->current_qty += $return['quantity'];
+    //             }
+
+    //             TransactionStatus::create([
+    //                 'transaction_id' => $id,
+    //                 'item_id' => $transaction->item_id,
+    //                 'quantity' => $return['quantity'],
+    //                 'status' => $return['return_status'],
+    //             ]);
+
+    //             if (in_array($return['return_status'], ['Lost', 'Damaged']) && !empty($return['penalty_remarks'])) {
+    //                 TransactionPenalty::create([
+    //                     'transaction_id' => $id,
+    //                     'item_id' => $transaction->item_id,
+    //                     'user_id' => $transaction->user_id,
+    //                     'quantity' => $return['quantity'],
+    //                     'amount' => $item->item_price * $return['quantity'],
+    //                     'status' => $return['return_status'],
+    //                     'remarks' => $return['penalty_remarks'],
+    //                 ]);
+    //             }
+    //         }
+
+    //         $item->save();
+    //         $transaction->update(['status' => 'Returned']);
+
+    //         DB::commit();
+
+    //         return response()->json([
+    //             'valid' => true,
+    //             'msg' => 'Transaction successfully returned.',
+    //         ], 200);
+    //     } catch (ValidationException $e) {
+    //         DB::rollback();
+
+    //         return response()->json([
+    //             'valid' => false,
+    //             'msg' => '',
+    //             'errors' => $e->errors(),
+    //         ], 422);
+    //     } catch (\Exception $e) {
+    //         DB::rollback();
+    //         Log::error('Failed to return transaction: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'valid' => false,
+    //             'msg' => 'Failed to return transaction. Please try again later.',
+    //         ], 500);
+    //     }
+    // }
     public function returnTransaction(Request $request, $id): JsonResponse
     {
         DB::beginTransaction();
@@ -552,6 +653,32 @@ class TransactionController extends Controller
                 throw ValidationException::withMessages([
                     'returns' => "Total return quantity ($totalReturnQuantity) must equal approved quantity ({$transaction->approve_quantity}).",
                 ]);
+            }
+
+            // Check for late return penalty
+            $returnDateTime = Carbon::parse(
+                $transaction->getRawOriginal('date_of_return') . ' ' . $transaction->time_of_return
+            );
+            $gracePeriodDays = 2;
+            $fineStartDateTime = $returnDateTime->copy()->addDays($gracePeriodDays);
+            $now = now();
+            $fine = 0;
+
+            if ($now->greaterThan($fineStartDateTime)) {
+                $hoursLate = $fineStartDateTime->diffInHours($now);
+                $fine = $hoursLate * 5; // ₱5 per hour late
+
+                if ($fine > 0) {
+                    TransactionPenalty::create([
+                        'transaction_id' => $id,
+                        'item_id' => $transaction->item_id,
+                        'user_id' => $transaction->user_id,
+                        'quantity' => $transaction->approve_quantity,
+                        'amount' => $fine,
+                        'status' => 'Late Return',
+                        'remarks' => 'Pay',
+                    ]);
+                }
             }
 
             // Process each return status

@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
+use GuzzleHttp\Client;
 
 class AuthController extends Controller
 {
@@ -46,7 +49,7 @@ class AuthController extends Controller
                 // Check if user is active
                 if (!$user->status) {
                     Auth::logout();
-                    return response()->json(['valid' => false, 'msg' => 'Your account is inactive.'], 403);
+                    return response()->json(['valid' => false, 'msg' => 'Your account is inactive/need activate.'], 403);
                 }
 
                 if ($user->user_role === 'Admin') {
@@ -86,57 +89,103 @@ class AuthController extends Controller
      * Handle registration request for Borrowers.
      */
     public function register(Request $request): JsonResponse
-{
-    try {
-        $validated = $request->validate([
-            'first_name'       => 'required|string|max:30',
-            'middle_name'      => 'nullable|string|max:30',
-            'last_name'        => 'required|string|max:30',
-            'extension_name'   => 'nullable|string|max:5',
-            'contact_no'       => 'required|string|max:20|unique:users,contact_no',
-            'email'            => 'required|email|max:255|unique:users,email',
-            'username'         => 'required|string|min:8|max:255|unique:users,username',
-            'password'         => 'required|string|min:8|regex:/^(?=.*[A-Z])(?=.*[0-9]).+$/|confirmed',
-        ], [
-            'password.regex'    => 'Password must contain at least one uppercase letter and one number.',
-            'password.confirmed'=> 'Password confirmation does not match.',
-        ]);
+    {
+        // Verify reCAPTCHA
+        $recaptchaResponse = $request->input('g-recaptcha-response');
+        $recaptchaSecret = env('RECAPTCHA_SECRET_KEY');
 
-        $user = new User();
-        $user->first_name     = $validated['first_name'];
-        $user->middle_name    = $validated['middle_name'] ?? null;
-        $user->last_name      = $validated['last_name'];
-        $user->extension_name = $validated['extension_name'] ?? null;
-        $user->contact_no     = $validated['contact_no'];
-        $user->email          = $validated['email'];
-        $user->username       = $validated['username'];
-        $user->password       = Hash::make($validated['password']);
-        $user->user_role      = 'Borrower';
-        $user->laboratory_id  = null;
-        $user->status         = 1;
-        $user->save(); // ✅ DATA IS SAVED TO DATABASE HERE
+        $httpClient = new Client();
 
-        Auth::login($user);
+        try {
+            $recaptchaVerification = $httpClient->post('https://www.google.com/recaptcha/api/siteverify', [
+                'form_params' => [
+                    'secret' => $recaptchaSecret,
+                    'response' => $recaptchaResponse,
+                    'remoteip' => $request->ip(),
+                ],
+            ]);
+            $recaptchaResult = json_decode($recaptchaVerification->getBody(), true);
 
-        return response()->json([
-            'valid' => true,
-            'msg' => 'Registration successful.',
-            'redirect' => route('viewBorrowerDashboard') // adjust if needed
-        ]);
-    } catch (ValidationException $e) {
-        return response()->json([
-            'valid' => false,
-            'msg' => 'Validation failed.',
-            'errors' => $e->errors()
-        ], 422);
-    } catch (\Exception $e) {
-        Log::error('Registration error: ' . $e->getMessage());
-        return response()->json([
-            'valid' => false,
-            'msg' => 'An error occurred while saving your data.'
-        ], 500);
+            if (!$recaptchaResult['success']) {
+                return response()->json(['error' => 'reCAPTCHA verification failed.'], 422);
+            }
+        } catch (\Exception $e) {
+            Log::error('reCAPTCHA error: ' . $e->getMessage());
+            return response()->json(['error' => 'reCAPTCHA verification error.'], 500);
+        }
+
+        try {
+            $validated = $request->validate([
+                'first_name'       => 'required|string|max:30|regex:/^[A-Za-z\s\-]+$/',
+                'middle_name'      => 'nullable|string|max:30|regex:/^[A-Za-z\s\-]+$/',
+                'last_name'        => 'required|string|max:30|regex:/^[A-Za-z\s\-]+$/',
+                'extension_name'   => 'nullable|string|max:5|regex:/^[A-Za-z]+$/', // usually just Jr, Sr, II etc.
+                'contact_no'       => 'required|string|max:20|unique:users,contact_no',
+                'email'            => 'required|email|max:255|unique:users,email',
+                'username'         => 'required|string|min:8|max:255|unique:users,username',
+                'password'         => 'required|string|min:8|regex:/^(?=.*[A-Z])(?=.*[0-9]).+$/|confirmed',
+                'course'           => 'required|in:BSIT,BSED,BEED,BSCRIM,BSHM,BSENTREP',
+                'school_id_image'  => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ], [
+                'first_name.regex'      => 'First name must contain only letters, spaces, or hyphens.',
+                'middle_name.regex'     => 'Middle name must contain only letters, spaces, or hyphens.',
+                'last_name.regex'       => 'Last name must contain only letters, spaces, or hyphens.',
+                'extension_name.regex'  => 'Extension name must contain only letters.',
+                'password.regex'        => 'Password must contain at least one uppercase letter and one number.',
+                'password.confirmed'    => 'Password confirmation does not match.',
+                'school_id_image.required' => 'School ID image is required.',
+                'school_id_image.image' => 'School ID must be an image.',
+                'school_id_image.mimes' => 'School ID must be a valid image (jpeg, png, or jpg).',
+                'school_id_image.max'   => 'School ID image must not exceed 2MB.',
+            ]);
+
+            $user = new User();
+            $user->first_name     = $validated['first_name'];
+            $user->middle_name    = $validated['middle_name'] ?? null;
+            $user->last_name      = $validated['last_name'];
+            $user->extension_name = $validated['extension_name'] ?? null;
+            $user->contact_no     = $validated['contact_no'];
+            $user->email          = $validated['email'];
+            $user->username       = $validated['username'];
+            $user->password       = Hash::make($validated['password']);
+            $user->user_role      = 'Borrower';
+            $user->laboratory_id  = null;
+            $user->course         = $validated['course'];
+            $user->status         = 0;
+            $user->save();
+
+            // Store the school ID image using Spatie Media Library
+            if ($request->hasFile('school_id_image')) {
+                $user->addMedia($request->file('school_id_image'))
+                    ->toMediaCollection('school_ids');
+            }
+
+            return response()->json([
+                'valid' => true,
+                'msg' => 'Registration successful. Please wait for the admin approval',
+                'redirect' => route('loginPage')
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'valid' => false,
+                'msg' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (FileDoesNotExist | FileIsTooBig $e) {
+            Log::error('Media upload error: ' . $e->getMessage());
+            return response()->json([
+                'valid' => false,
+                'msg' => 'Error uploading School ID image.'
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Registration error: ' . $e->getMessage());
+            return response()->json([
+                'valid' => false,
+                'msg' => 'An error occurred while saving your data.'
+            ], 500);
+        }
     }
-}
+
     /**
      * Handle logout request.
      */

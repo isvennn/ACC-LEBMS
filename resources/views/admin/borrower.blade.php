@@ -19,6 +19,7 @@
                         <th>Email</th>
                         <th>Contact No</th>
                         <th>Role</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -27,6 +28,22 @@
     </div>
     @include('modal.add_borrower')
     @include('modal.update_borrower')
+    <div class="modal fade" id="viewStudentID" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Student ID</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="student-id-image" src="" alt="Student ID" class="img-fluid rounded shadow-sm"
+                        style="max-height: 500px;" />
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('scripts')
     <script type="text/javascript">
@@ -64,6 +81,9 @@
                         data: 'user_role'
                     },
                     {
+                        data: 'status'
+                    },
+                    {
                         data: 'action',
                         orderable: false,
                         searchable: false
@@ -81,6 +101,24 @@
                         });
                     }
                 }],
+            });
+
+            $('#table1 tbody').on('click', 'td', function() {
+                var cellIndex = $(this).index(); // Get column index of clicked cell
+
+                // Ignore click if it's the 7th column (Actions)
+                if (cellIndex === 6) return;
+
+                var data = table1.row($(this).closest('tr')).data();
+
+                if (data && data.student_id) {
+                    $('#student-id-image').attr('src', data.student_id);
+                    $('#viewStudentID').modal('show');
+                } else {
+                    $('#student-id-image').attr('src', '');
+                    $('#viewStudentID').modal('hide');
+                    toastr.warning('No Student ID image available.');
+                }
             });
         });
 
@@ -118,6 +156,25 @@
                     } else {
                         showErrorMessage("An unexpected error occurred. Please try again.");
                     }
+                }
+            });
+        }
+
+        function status(id) {
+            $.ajax({
+                method: 'PUT',
+                url: `/users/status/${id}`,
+                dataType: 'JSON',
+                cache: false,
+                success: function(response) {
+                    if (response.valid) {
+                        table1.ajax.reload(null, false);
+                        showSuccessMessage(response.msg);
+                    }
+                },
+                error: function(jqXHR) {
+                    showErrorMessage(jqXHR.responseJSON && jqXHR.responseJSON.msg ? jqXHR.responseJSON.msg :
+                        "An unexpected error occurred. Please try again.");
                 }
             });
         }

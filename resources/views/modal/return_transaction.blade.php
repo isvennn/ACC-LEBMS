@@ -16,7 +16,9 @@
                                     class="fas fa-plus"></i> Add Status</button>
                         </div>
                         <div class="col-md-12">
-                            <div id="quantity-error" class="text-danger mt-2 mb-2 text-center alert alert-danger text-white" style="display: none;"></div>
+                            <div id="quantity-error"
+                                class="text-danger mt-2 mb-2 text-center alert alert-danger text-white"
+                                style="display: none;"></div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Transaction No: </label>
@@ -29,6 +31,11 @@
                         <div class="col-md-4">
                             <label class="form-label">Approved Quantity: </label>
                             <span id="approve_quantity"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12" id="fineText">
+
                         </div>
                     </div>
                 </div>
@@ -81,7 +88,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i>
                     Close</button>
             </div>
         </form>
@@ -102,7 +109,7 @@
         });
 
         // Show modal and fetch transaction data
-        window.returnTransaction = function(id) {
+        window.returnTransaction = function(id, fines) {
             transactionID = id;
             $.ajax({
                 method: 'GET',
@@ -115,6 +122,25 @@
                     $('#transaction_no').text(response.transaction_no);
                     $('#item_name').text(response.item ? response.item.item_name : 'N/A');
                     $('#approve_quantity').text(response.approve_quantity);
+                    if (fines > 0) {
+                        const formattedFine = parseFloat(fines).toLocaleString('en-PH', {
+                            style: 'currency',
+                            currency: 'PHP',
+                            minimumFractionDigits: 2,
+                        });
+
+                        $('#fineText').html(`
+                            <hr class="bg-danger">
+                            <h3><i class="fas fa-coins mr-1"></i> Fines:
+                                <span class="badge badge-pill badge-danger d-inline-flex align-items-center">
+                                    ${formattedFine}
+                                </span>
+                            </h3>
+                        `);
+                    } else {
+                        $('#fineText').html(''); // Clear if no fine
+                    }
+
                     $('#returnItemsTableBody').html(`
                     <tr class="return-row">
                         <td>

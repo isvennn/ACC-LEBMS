@@ -3,7 +3,7 @@
         <form id="addForm" class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h3 class="modal-title" id="addModalLabel">Add Transaction</h3>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                <button type="button" class="btn-close btn-close-white" data-dismiss="modal"
                     aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -69,7 +69,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i>
                     Close</button>
             </div>
         </form>
