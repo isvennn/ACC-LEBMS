@@ -102,7 +102,7 @@
                             <th style="width: 20%;">Date of Usage</th>
                             <th style="width: 20%;">Date of Return</th>
                             <th style="width: 15%;">Time of Return</th>
-                            <th style="width: 15%;">Reserve Quantity</th>
+                            <th style="width: 15%;">Quantity</th>
                             <th style="width: 5%;">Action</th>
                         </tr>
                     </thead>
