@@ -17,9 +17,12 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <!-- SweetAlert2 -->
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4@5/bootstrap-4.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4@5/bootstrap-4.min.css">
     <!-- AdminLTE Theme -->
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
+
+    <!-- Google reCAPTCHA v3 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             background: url('{{ asset('dist/img/acc_campus.png') }}') no-repeat center center fixed;
@@ -29,455 +32,407 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
-       .register-box {
-    width: 100%;
-    
-    max-width: 900px;
-    margin: 40px 15px;
-    padding: 20px;
-}
+        .register-box {
+            width: 100%;
+            max-width: 960px;
+            margin: 40px 15px;
+            padding: 30px;
+        }
 
-.card {
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-}
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-.card-header {
-    background: linear-gradient(90deg, #28a745,rgb(57, 148, 77));
-    color: white;
-    padding: 20px;
-    text-align: center;
-}
+        .card-header {
+            background: linear-gradient(135deg, #1e7e34, #28a745);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
 
-.card-header h3 {
-    margin: 0;
-    font-weight: 600;
-}
+        .card-header h3 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
 
-.card-body {
-    padding: 30px;
-}
+        .card-body {
+            padding: 40px;
+        }
 
-.form-group label {
-    font-weight: 500;
-    color: #333;
-}
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
 
-/* Unified input-group-text */
-.input-group-text {
-    background-color: #f1f1f1;
-    border: none;
-    border-left: 1px solid #ced4da;
-}
+        .input-group-text {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-right: none;
+            color: #495057;
+        }
 
-/* Unified form-control */
-.form-control {
-    border-radius: 8px;
-    border: 1px solid #ced4da;
-    transition: all 0.3s ease;
-}
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
 
-.form-control:focus {
-    border-color: #45b27a;
-    box-shadow: 0 0 8px rgba(69, 178, 122, 0.2);
-}
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.2);
+        }
 
-/* Unified submit button */
-.btn-success,
-.field.btn input[type="submit"] {
-    background-color: #28a745;
-    border: none;
-    padding: 10px;
-    font-weight: 500;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
+        .btn-primary {
+            background-color: #28a745;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
 
-.btn-success:hover {
-    background-color:rgb(0, 135, 29);
-}
+        .btn-primary:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
 
-/* Gradient animation button (optional if not used elsewhere) */
-.field.btn {
-    height: 50px;
-    width: 100%;
-    border-radius: 5px;
-    position: relative;
-    overflow: hidden;
-    margin-top: 10px;
-}
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+        }
 
-.btn-layer {
-    height: 100%;
-    width: 300%;
-    position: absolute;
-    left: -100%;
-    background: -webkit-linear-gradient(right, #45b27a, #d2acbe, #45b27a);
-    /* background:  background-color:rgb(0, 135, 29); */
-    border-radius: 5px;
-    transition: all 0.4s ease;
-}
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
 
-.field.btn:hover .btn-layer {
-    left: 0;
-}
+        .btn-toggle-password {
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0 10px;
+            color: #495057;
+        }
 
-.field.btn input[type="submit"] {
-    height: 100%;
-    width: 100%;
-    z-index: 1;
-    position: relative;
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 20px;
-    font-weight: 500;
-    cursor: pointer;
-}
-#registerForm {
-    background-color: rgba(255, 255, 255, 0.2); /* white with transparency */
-    backdrop-filter: blur(10px); /* blur effect */
-    -webkit-backdrop-filter: blur(10px); /* for Safari support */
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3); /* subtle border */
-}
+        .btn-toggle-password:hover {
+            color: #28a745;
+        }
 
-/* .card {
-    background-color: rgba(255, 255, 255, 0.1); /* light transparent background */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* optional shadow for depth */
-} */
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
 
+        .text-maroon {
+            color: #800000;
+            font-weight: 600;
+        }
 
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
 
-/* Other styles */
-.alert {
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
+        .modal-header {
+            background: linear-gradient(135deg, #1e7e34, #28a745);
+            color: white;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
 
-.text-maroon {
-    color: #800000;
-    font-weight: 500;
-}
+        .modal-title {
+            font-weight: 600;
+        }
 
-/* Responsive styles */
-@media (max-width: 768px) {
-    .register-box {
-        margin: 10px;
-        max-width: 95%;
-    }
+        #previewImage {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
 
-    .card-body {
-        padding: 20px;
-    }
-}
+        @media (max-width: 768px) {
+            .register-box {
+                margin: 20px;
+                max-width: 90%;
+            }
 
-@media (max-width: 576px) {
-    .card-header h3 {
-        font-size: 1.5rem;
-    }
+            .card-body {
+                padding: 25px;
+            }
 
-    .form-group label {
-        font-size: 0.9rem;
-    }
+            .card-header h3 {
+                font-size: 1.5rem;
+            }
+        }
 
-    .btn-success,
-    .field.btn input[type="submit"] {
-        padding: 8px;
-        font-size: 16px;
-    }
-    #registerForm {
-    background-color: #f8f9fa; /* Light gray */
-    padding: 20px;
-    border-radius: 10px;
-}
+        @media (max-width: 576px) {
+            .card-header h3 {
+                font-size: 1.3rem;
+            }
 
-}
+            .form-group label {
+                font-size: 0.85rem;
+            }
 
-
-
+            .btn-primary,
+            .btn-secondary {
+                font-size: 0.95rem;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 
-<!-- <body class="hold-transition register-page">
-    <div class="register-box">
-        <div class="card card-outline card-success">
-            <div class="card-header text-center">
-                <h3 class="text-bold">BORROWER REGISTRATION</h3>
-            </div>
-            <div class="card-body">
-                <form id="registerForm">
-                    <div id="response-msg"></div>
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6">
-                            <div class="form-group">
-                                <label for="first_name">First Name <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="first_name" name="first_name"
-                                        required>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6">
-                            <div class="form-group">
-                                <label for="middle_name">Middle Name</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="middle_name" name="middle_name">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6">
-                            <div class="form-group">
-                                <label for="last_name">Last Name <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6">
-                            <div class="form-group">
-                                <label for="extension_name">Extension Name</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="extension_name"
-                                        name="extension_name">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6">
-                            <div class="form-group">
-                                <label for="contact_no">Contact Number <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="contact_no" name="contact_no"
-                                        data-inputmask="'mask': '(+63) 999-999-9999'" placeholder="(+63) 999-999-9999"
-                                        required>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6">
-                            <div class="form-group">
-                                <label for="email">Email <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4">
-                            <div class="form-group">
-                                <label for="username">Username <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="username" name="username"
-                                        required>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4">
-                            <div class="form-group">
-                                <label for="password">Password <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="password" name="password"
-                                        required>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4">
-                            <div class="form-group">
-                                <label for="password_confirmation">Confirm Password <span
-                                        class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="password_confirmation"
-                                        name="password_confirmation" required>
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-success btn-block">Register</button>
-                        </div>
-                    </div>
-                </form>
-                <div class="row mt-3">
-                    <div class="col-12 text-right">
-                        <p>Already have an account? <a href="{{ route('loginPage') }}" class="text-maroon">Sign In</a></p>
-                    </div>
+<body class="hold-transition register-page">
+    <div class="container py-5">
+        <div class="register-box mx-auto">
+            <div class="card card-outline card-success">
+                <div class="card-header text-center">
+                    <h3 class="text-bold">BORROWER REGISTRATION</h3>
                 </div>
-            </div>
-        </div>
-    </div> -->
-    <body class="hold-transition register-page">
-<div class="container py-4">
-    <div class="register-box mx-auto">
-        <div class="card card-outline card-success">
-            <div class="card-header text-center">
-                <h3 class="text-bold">BORROWER REGISTRATION</h3>
-            </div>
-            <div class="card-body">
-                <form id="registerForm">
-                    <div id="response-msg"></div>
-                    <div class="row">
-                        <!-- First Name -->
-                        <div class="col-md-6 mb-3">
-                            <label for="first_name">First Name <span class="text-danger">*</span></label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                <div class="card-body">
+                    <form id="registerForm" enctype="multipart/form-data">
+                        <div id="response-msg"></div>
+                        <div class="row">
+                            <!-- First Name -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="first_name">First Name <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="first_name" name="first_name"
+                                            required pattern="^[A-Za-z\s\-]+$"
+                                            title="First name must contain only letters, spaces, or hyphens.">
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control" id="first_name" name="first_name" required>
                             </div>
-                        </div>
 
-                        <!-- Middle Name -->
-                        <div class="col-md-6 mb-3">
-                            <label for="middle_name">Middle Name</label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                            <!-- Middle Name -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="middle_name">Middle Name</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="middle_name" name="middle_name"
+                                            pattern="^[A-Za-z\s\-]+$"
+                                            title="Middle name must contain only letters, spaces, or hyphens.">
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control" id="middle_name" name="middle_name">
                             </div>
-                        </div>
 
-                        <!-- Last Name -->
-                        <div class="col-md-6 mb-3">
-                            <label for="last_name">Last Name <span class="text-danger">*</span></label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                            <!-- Last Name -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="last_name">Last Name <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="last_name" name="last_name"
+                                            required pattern="^[A-Za-z\s\-]+$"
+                                            title="Last name must contain only letters, spaces, or hyphens.">
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control" id="last_name" name="last_name" required>
                             </div>
-                        </div>
 
-                        <!-- Extension Name -->
-                        <div class="col-md-6 mb-3">
-                            <label for="extension_name">Extension Name</label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                            <!-- Extension Name -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="extension_name">Extension Name</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="extension_name"
+                                            name="extension_name" pattern="^[A-Za-z]+$"
+                                            title="Extension name must contain only letters (e.g., Jr, Sr, II).">
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control" id="extension_name" name="extension_name">
                             </div>
-                        </div>
 
-                        <!-- Contact Number -->
-                        <div class="col-md-6 mb-3">
-                            <label for="contact_no">Contact Number <span class="text-danger">*</span></label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-phone"></i></span>
+                            <!-- Contact Number -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="contact_no">Contact Number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="contact_no" name="contact_no"
+                                            placeholder="(+63) 999-999-9999"
+                                            data-inputmask="'mask': '(+63) 999-999-9999'" required>
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control" id="contact_no" name="contact_no"
-                                       placeholder="(+63) 999-999-9999"
-                                       data-inputmask="'mask': '(+63) 999-999-9999'" required>
                             </div>
-                        </div>
 
-                        <!-- Email -->
-                        <div class="col-md-6 mb-3">
-                            <label for="email">Email <span class="text-danger">*</span></label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-envelope"></i></span>
+                            <!-- Email -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="email">Email <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        </div>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            required>
+                                    </div>
                                 </div>
-                                <input type="email" class="form-control" id="email" name="email" required>
                             </div>
-                        </div>
 
-                        <!-- Username -->
-                        <div class="col-md-4 mb-3">
-                            <label for="username">Username <span class="text-danger">*</span></label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-user-circle"></i></span>
+                            <!-- Course -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="course">Course <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i
+                                                    class="fas fa-graduation-cap"></i></span>
+                                        </div>
+                                        <select name="course" id="course" class="form-control" required>
+                                            <option value="" selected disabled>-- Select Course --</option>
+                                            <option value="BSIT">BSIT</option>
+                                            <option value="BSED">BSED</option>
+                                            <option value="BEED">BEED</option>
+                                            <option value="BSCRIM">BSCRIM</option>
+                                            <option value="BSHM">BSHM</option>
+                                            <option value="BSENTREP">BSENTREP</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control" id="username" name="username" required>
                             </div>
-                        </div>
 
-                        <!-- Password -->
-                        <div class="col-md-4 mb-3">
-                            <label for="password">Password <span class="text-danger">*</span></label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                            <!-- Username -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="username">Username <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="username" name="username"
+                                            required>
+                                    </div>
                                 </div>
-                                <input type="password" class="form-control" id="password" name="password" required>
                             </div>
-                        </div>
 
-                        <!-- Confirm Password -->
-                        <div class="col-md-4 mb-3">
-                            <label for="password_confirmation">Confirm Password <span class="text-danger">*</span></label>
-                            <div class="input-group shadow-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                            <!-- Password -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="password">Password <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        </div>
+                                        <input type="password" class="form-control" id="password" name="password"
+                                            required>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn-toggle-password"
+                                                data-target="password">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    <label for="password_confirmation">Confirm Password <span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        </div>
+                                        <input type="password" class="form-control" id="password_confirmation"
+                                            name="password_confirmation" required>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn-toggle-password"
+                                                data-target="password_confirmation">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Submit Button -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="field btn">
-                                <div class="btn-layer"></div>
-                                <input type="submit" value="Register">
+                        <!-- Submit Button -->
+                        <div class="row mt-4">
+                            <div class="col-12 text-center">
+                                <button type="button" class="btn btn-primary w-100"
+                                    id="validateForm">Register</button>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
 
-                <!-- Link to Login -->
-                <div class="row mt-3">
-                    <div class="col-12 text-right">
-                        <p>Already have an account?
-                            <a href="{{ route('loginPage') }}" class="text-maroon font-weight-bold">Sign In</a>
-                        </p>
+                    <!-- Link to Login -->
+                    <div class="row mt-3">
+                        <div class="col-12 text-center">
+                            <p>Already have an account?
+                                <a href="{{ route('loginPage') }}" class="text-maroon font-weight-bold">Sign In</a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- ID Upload Modal -->
+    <div class="modal fade" id="idUploadModal" tabindex="-1" role="dialog" aria-labelledby="idUploadModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="idUploadModalLabel">Upload School ID</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="school_id_image">Upload your School ID <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control-file" id="school_id_image" name="school_id_image"
+                            accept="image/*" required>
+                        <img id="previewImage" src="#" alt="ID Preview" class="img-fluid mt-3">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitRegistration">Submit
+                        Registration</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- jQuery -->
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap 4 -->
@@ -487,7 +442,8 @@
     <script src="{{ asset('plugins/jquery-validation/additional-methods.min.js') }}"></script>
     <!-- SweetAlert2 -->
     <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
-    <!-- InputMask --><script src="https://cdn.jsdelivr.net/npm/inputmask@5/dist/jquery.inputmask.min.js"></script>
+    <!-- InputMask -->
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5/dist/jquery.inputmask.min.js"></script>
     <!-- AdminLTE App -->
     <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
     <script>
@@ -520,6 +476,40 @@
             // Initialize InputMask
             $('[data-inputmask]').inputmask();
 
+            // Show/Hide Password
+            $('.btn-toggle-password').on('click', function() {
+                const targetId = $(this).data('target');
+                const input = $('#' + targetId);
+                const icon = $(this).find('i');
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    input.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            // Image preview
+            $('#school_id_image').on('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#previewImage').attr('src', e.target.result).show();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    $('#previewImage').hide();
+                }
+            });
+
+            // Define custom regex method for jQuery Validation
+            $.validator.addMethod('regex', function(value, element, param) {
+                return this.optional(element) || param.test(value);
+            }, 'Please enter a value matching the pattern.');
+
+            // Form validation
             $('#registerForm').validate({
                 rules: {
                     first_name: {
@@ -562,6 +552,9 @@
                                 }
                             }
                         }
+                    },
+                    course: {
+                        required: true
                     },
                     username: {
                         required: true,
@@ -611,6 +604,9 @@
                         email: "Please enter a valid email address.",
                         remote: "This email is already taken."
                     },
+                    course: {
+                        required: "Course is required."
+                    },
                     username: {
                         required: "Username is required.",
                         minlength: "Username must be at least 8 characters long.",
@@ -639,64 +635,56 @@
                 }
             });
 
-            // Custom regex method for password
-            $.validator.addMethod("regex", function(value, element, regexp) {
-                return this.optional(element) || new RegExp(regexp).test(value);
-            });
-
-            $('#registerForm').submit(function(event) {
-                event.preventDefault();
-                const $submitButton = $(this).find('button[type=submit]');
+            // Validate form before showing modal
+            $('#validateForm').on('click', function() {
+                const $submitButton = $(this);
                 $submitButton.prop('disabled', true);
 
-                if ($(this).valid()) {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: 'Please confirm your registration details.',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#28a745',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Proceed',
-                        cancelButtonText: 'Cancel'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $.ajax({
-                                method: 'POST',
-                                url: '{{ route('registerPage') }}',
-                                data: $(this).serialize(),
-                                dataType: 'JSON',
-                                success: function(response) {
-                                    if (response.valid) {
-                                        showSuccessMessage(response.msg);
-                                        setTimeout(() => {
-                                            window.location.href = response
-                                                .redirect;
-                                        }, 1500);
-                                    } else {
-                                        showErrorMessage(response.msg);
-                                    }
-                                },
-                                error: function(jqXHR) {
-                                    let errorMsg = jqXHR.responseJSON?.msg ||
-                                        'An error occurred.';
-                                    if (jqXHR.responseJSON?.errors) {
-                                        errorMsg += '\n' + Object.values(jqXHR
-                                            .responseJSON.errors).flat().join('\n');
-                                    }
-                                    showErrorMessage(errorMsg);
-                                },
-                                complete: function() {
-                                    $submitButton.prop('disabled', false);
-                                }
-                            });
-                        } else {
-                            $submitButton.prop('disabled', false);
-                        }
-                    });
+                if ($('#registerForm').valid()) {
+                    $('#idUploadModal').modal('show');
                 } else {
-                    $submitButton.prop('disabled', false);
+                    showErrorMessage('Please fill out all required fields correctly.');
                 }
+                $submitButton.prop('disabled', false);
+            });
+
+            // Modal submission
+            $('#submitRegistration').on('click', function() {
+                if ($('#school_id_image').val() === '') {
+                    showErrorMessage('Please upload your School ID.');
+                    return;
+                }
+
+                const formData = new FormData($('#registerForm')[0]);
+                formData.append('school_id_image', $('#school_id_image')[0].files[0]);
+
+                $.ajax({
+                    method: 'POST',
+                    url: '{{ route('register') }}',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'JSON',
+                    success: function(response) {
+                        if (response.valid) {
+                            $('#idUploadModal').modal('hide');
+                            showSuccessMessage(response.msg);
+                            setTimeout(() => {
+                                window.location.href = response.redirect;
+                            }, 1500);
+                        } else {
+                            showErrorMessage(response.msg);
+                        }
+                    },
+                    error: function(jqXHR) {
+                        let errorMsg = jqXHR.responseJSON?.msg || 'An error occurred.';
+                        if (jqXHR.responseJSON?.errors) {
+                            errorMsg += '\n' + Object.values(jqXHR.responseJSON.errors).flat()
+                                .join('\n');
+                        }
+                        showErrorMessage(errorMsg);
+                    }
+                });
             });
         });
     </script>

@@ -14,7 +14,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                 @if (auth()->user()->user_role !== 'Admin')
-                    <a class="dropdown-item" href="{{route('myProfile')}}" id="myProfile">
+                    <a class="dropdown-item" href="#" id="myProfile">
                         <i class="fas fa-user"></i> My Profile
                     </a>
                 @endif

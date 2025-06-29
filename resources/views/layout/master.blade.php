@@ -304,11 +304,11 @@
         </div>
     @endif
 
-   <!-- Font Awesome -->
-<!-- Make sure Font Awesome is included -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Font Awesome -->
+    <!-- Make sure Font Awesome is included -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-{{-- <style>
+    {{-- <style>
     .password-wrapper {
         position: relative;
     }
@@ -329,92 +329,98 @@
     }
 </style> --}}
 
-<div id="changePassModal" class="modal fade">
-    <div class="modal-dialog">
-        <form id="changePassForm" class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Update Password</h3>
-            </div>
-            <div class="modal-body">
-
-                <!-- Current Password -->
-                <div class="form-group password-wrapper">
-                    <label for="current_password">Current Password <span class="text-danger">*</span></label>
-                    <input type="password" name="current_password" id="current_password" class="form-control" required>
-                    <span class="password-toggle" data-target="#current_password"></span>
+    <div id="changePassModal" class="modal fade">
+        <div class="modal-dialog">
+            <form id="changePassForm" class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Update Password</h3>
                 </div>
+                <div class="modal-body">
 
-                <!-- New Password -->
-                <div class="form-group password-wrapper">
-                    <label for="new_password">New Password <span class="text-danger">*</span></label>
-                    <input type="password" name="new_password" id="new_password" class="form-control" required>
-                    <span class="password-toggle" data-target="#new_password"></span>
+                    <!-- Current Password -->
+                    <div class="form-group password-wrapper">
+                        <label for="current_password">Current Password <span class="text-danger">*</span></label>
+                        <input type="password" name="current_password" id="current_password" class="form-control"
+                            required>
+                        <span class="password-toggle" data-target="#current_password"></span>
+                    </div>
+
+                    <!-- New Password -->
+                    <div class="form-group password-wrapper">
+                        <label for="new_password">New Password <span class="text-danger">*</span></label>
+                        <input type="password" name="new_password" id="new_password" class="form-control" required>
+                        <span class="password-toggle" data-target="#new_password"></span>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group password-wrapper">
+                        <label for="new_password_confirmation">Confirm New Password <span
+                                class="text-danger">*</span></label>
+                        <input type="password" name="new_password_confirmation" id="new_password_confirmation"
+                            class="form-control" required>
+                        <span class="password-toggle" data-target="#new_password_confirmation"></span>
+                    </div>
+
                 </div>
-
-                <!-- Confirm Password -->
-                <div class="form-group password-wrapper">
-                    <label for="new_password_confirmation">Confirm New Password <span class="text-danger">*</span></label>
-                    <input type="password" name="new_password_confirmation" id="new_password_confirmation" class="form-control" required>
-                    <span class="password-toggle" data-target="#new_password_confirmation"></span>
+                <div class="modal-footer text-right">
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i>
+                        Cancel</button>
                 </div>
-
-            </div>
-            <div class="modal-footer text-right">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
     <!-- Profile Modal -->
-<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-md">
-    <div class="modal-content rounded-3 shadow">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="profileModalLabel">My Profile</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content rounded-3 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="profileModalLabel">My Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
 
-      <div class="modal-body">
-        <div class="mb-2">
-          <label class="form-label fw-bold">Full Name:</label>
-          <div id="pFullName" class="form-control-plaintext"></div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label fw-bold">First Name:</label>
-          <div id="pFirstName" class="form-control-plaintext"></div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label fw-bold">Middle Name:</label>
-          <div id="pMiddleName" class="form-control-plaintext"></div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label fw-bold">Last Name:</label>
-          <div id="pLastName" class="form-control-plaintext"></div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label fw-bold">Extension Name:</label>
-          <div id="pExtensionName" class="form-control-plaintext"></div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label fw-bold">Email:</label>
-          <div id="pEmail" class="form-control-plaintext"></div>
-        </div>
-        <div class="mb-2">
-          <label class="form-label fw-bold">Contact No.:</label>
-          <div id="pContactNo" class="form-control-plaintext"></div>
-        </div>
-      </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Full Name:</label>
+                        <div id="pFullName" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">First Name:</label>
+                        <div id="pFirstName" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Middle Name:</label>
+                        <div id="pMiddleName" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Last Name:</label>
+                        <div id="pLastName" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Extension Name:</label>
+                        <div id="pExtensionName" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Email:</label>
+                        <div id="pEmail" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Contact No.:</label>
+                        <div id="pContactNo" class="form-control-plaintext"></div>
+                    </div>
+                </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-    
+
 
     <!-- jQuery -->
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
@@ -514,9 +520,9 @@
                 allowedFileExtensions: ["jpg", "png", "gif", "jpeg"]
             });
 
-            $(function () {
+            $(function() {
                 // Show/hide icon only when there's input
-                $('input[type="password"]').on('input', function () {
+                $('input[type="password"]').on('input', function() {
                     const wrapper = $(this).closest('.password-wrapper');
                     const toggle = wrapper.find('.password-toggle');
                     if ($(this).val().length > 0) {
@@ -529,7 +535,7 @@
                 });
 
                 // Toggle password visibility
-                $('.password-toggle').on('click', function () {
+                $('.password-toggle').on('click', function() {
                     const input = $($(this).data('target'));
                     const icon = $(this).find('i');
                     const isPassword = input.attr('type') === 'password';
@@ -547,37 +553,7 @@
             $('#myProfile').click(function(event) {
                 event.preventDefault();
 
-                $.ajax({
-                    method: 'GET',
-                    url: '{{ route('myProfile') }}',
-                    dataType: 'JSON',
-                    cache: false,
-                    success: function(response) {
-                        if (response.valid) {
-                            $('#pFullName').text(response.fullname);
-                            $('#pFirstName').text(response.first_name);
-                            $('#pMiddleName').text(response.middle_name);
-                            $('#pLastName').text(response.last_name);
-                            $('#pExtensionName').text(response.extension_name);
-                            $('#pEmail').text(response.email);
-                            $('#pContactNo').text(response.contact_no);
-                            $('#profileModal').modal('show');
-                        }
-                    },
-                    error: function(jqXhr, textStatus, error) {
-                        if (jqXhr.responseJSON && jqXhr.responseJSON
-                            .error) {
-                            var errors = jqXhr.responseJSON.error;
-                            var errorMsg = "Error submitting data: " +
-                                errors + ". ";
-                            showErrorMessage(errorMsg);
-                        } else {
-                            showErrorMessage(
-                                'Something went wrong! Please try again later.'
-                            );
-                        }
-                    }
-                });
+                $('#profileModal').modal('show');
             });
 
             $.validator.addMethod(

@@ -99,12 +99,12 @@
                                         $('#inventoryTable').hide();
                                     },
                                 },
-                                {
-                                    extend: "excel",
-                                    text: '<i class="fa fa-file-excel"></i> Excel',
-                                    className: "btn btn-success btn-md",
-                                    titleAttr: "Export data to Excel",
-                                },
+                                // {
+                                //     extend: "excel",
+                                //     text: '<i class="fa fa-file-excel"></i> Excel',
+                                //     className: "btn btn-success btn-md",
+                                //     titleAttr: "Export data to Excel",
+                                // },
                                 {
                                     extend: "print",
                                     text: '<i class="fa fa-print"></i> Print',

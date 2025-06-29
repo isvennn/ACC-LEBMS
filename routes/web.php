@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LaboratoryController;
@@ -12,8 +13,8 @@ use App\Http\Controllers\Navigation\StaffNavigationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\PenaltyController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
@@ -92,8 +93,6 @@ Route::prefix('borrower')->middleware(CheckRole::class)->group(function () {
     Route::get('transaction', [BorrowerNavigationController::class, 'transaction'])->name('viewBorrowerTransaction');
 });
 
-Route::get('/myProfile', [UserProfileController::class, 'myProfile'])->name('myProfile');
-
 // Route::get('/changePassword', function () {})->name('changePassword');
 Route::post('/changePassword', [UserController::class, 'changePassword'])->name('changePassword');
 Route::post('/changeUserPassword/{id}', [UserController::class, 'changeUserPassword'])->name('changeUserPassword');
@@ -114,6 +113,7 @@ Route::prefix('users')->group(function () {
     Route::get('/{user}', [UserController::class, 'show'])->name('users.show');
     Route::post('/', [UserController::class, 'store'])->name('users.store');
     Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::put('/status/{user}', [UserController::class, 'status'])->name('users.status');
     Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 
@@ -168,3 +168,7 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('check-username', [AuthController::class, 'checkUsername'])->name('checkUsername');
 Route::post('check-email', [AuthController::class, 'checkEmail'])->name('checkEmail');
 Route::post('check-contact', [AuthController::class, 'checkContact'])->name('checkContact');
+Route::get('/recover', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/recover', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset', [ResetPasswordController::class, 'reset'])->name('password.update');

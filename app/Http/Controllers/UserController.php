@@ -28,7 +28,25 @@ class UserController extends Controller
         $response = $users->map(function ($user, $index) {
             $actionUpdate = '<button onclick="update(' . "'" . $user->id . "'" . ')" type="button" title="Update" class="btn btn-secondary"><i class="fas fa-edit"></i></button>';
             $actionDelete = '<button onclick="trash(' . "'" . $user->id . "'" . ')" type="button" title="Delete" class="btn btn-danger"><i class="fas fa-trash"></i></button>';
-            $action = '<div class="d-flex align-items-center">' . $actionUpdate . '&nbsp;' . $actionDelete . '</div>';
+
+            // Set status button class and icon based on user status
+            if ($user->status) {
+                // Active → show option to deactivate
+                $statusClass = 'btn-success';
+                $statusIcon = 'fa-user-check';
+            } else {
+                // Inactive → show option to activate
+                $statusClass = 'btn-warning';
+                $statusIcon = 'fa-user-slash';
+            }
+
+            $actionStatus = '<button onclick="status(' . "'" . $user->id . "'" . ')" type="button" title="Toggle Status" class="btn ' . $statusClass . '"><i class="fas ' . $statusIcon . '"></i></button>';
+
+            if ($user->user_role === 'Borrower') {
+                $action = '<div class="d-flex align-items-center">' . $actionUpdate . '&nbsp;' . $actionDelete . '&nbsp;' . $actionStatus . '</div>';
+            } else {
+                $action = '<div class="d-flex align-items-center">' . $actionUpdate . '&nbsp;' . $actionDelete . '</div>';
+            }
 
             return [
                 'count' => $index + 1,
@@ -41,12 +59,13 @@ class UserController extends Controller
                 'status' => $user->status ? 'Active' : 'Inactive',
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'action' => $action,
+                'student_id' => $user->getFirstMediaUrl('school_ids'),
             ];
         });
 
         return response()->json($response);
     }
-    
+
     public function list(Request $request): JsonResponse
     {
         $excludeRoles = $request->input('exclude_roles', []); // default to empty array
@@ -232,64 +251,99 @@ class UserController extends Controller
         }
     }
 
+    public function status(User $user): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            $user->update([
+                'status' => !$user->status // toggle the status
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'valid' => true,
+                'msg' => 'User status successfully updated.',
+            ], 200);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'valid' => false,
+                'msg' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Failed to update user status: ' . $e->getMessage());
+
+            return response()->json([
+                'valid' => false,
+                'msg' => 'An unexpected error occurred while updating user status.',
+            ], 500);
+        }
+    }
+
     public function changePassword(Request $request)
-{
-    // Log request method and URL (optional for debugging)
-    Log::info('ChangePassword request: Method=' . $request->method() . ', URL=' . $request->fullUrl());
+    {
+        // Log request method and URL (optional for debugging)
+        Log::info('ChangePassword request: Method=' . $request->method() . ', URL=' . $request->fullUrl());
 
-    // Validate the request input
-    $validated = $request->validate([
-        'current_password' => 'required',
-        'new_password' => 'required|min:8|confirmed',
-    ]);
+        // Validate the request input
+        $validated = $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
 
-    $user = auth()->user();
+        $user = auth()->user();
 
-    // Check if the current password is correct
-    if (!Hash::check($validated['current_password'], $user->password)) {
+        // Check if the current password is correct
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json([
+                'valid' => false,
+                'msg' => 'Current password is incorrect.'
+            ], 422);
+        }
+
+        // Update the password
+        $user->password = Hash::make($validated['new_password']);
+        $user->save();
+
         return response()->json([
-            'valid' => false,
-            'msg' => 'Current password is incorrect.'
-        ], 422);
+            'valid' => true,
+            'msg' => 'Password changed successfully.'
+        ]);
     }
 
-    // Update the password
-    $user->password = Hash::make($validated['new_password']);
-    $user->save();
+    public function changeUserPassword(Request $request, $id)
+    {
+        // Validate the request input
+        $validated = $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
 
-    return response()->json([
-        'valid' => true,
-        'msg' => 'Password changed successfully.'
-    ]);
-}
+        $user = User::findOrFail($id);
 
-public function changeUserPassword(Request $request, $id)
-{
-    // Validate the request input
-    $validated = $request->validate([
-        'current_password' => 'required',
-        'new_password' => 'required|min:8|confirmed',
-    ]);
+        // Check if the current password is correct
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json([
+                'valid' => false,
+                'msg' => 'Current password is incorrect.'
+            ], 422);
+        }
 
-    $user = User::findOrFail($id);
+        // Update the password
+        $user->password = Hash::make($validated['new_password']);
+        $user->save();
 
-    // Check if the current password is correct
-    if (!Hash::check($validated['current_password'], $user->password)) {
         return response()->json([
-            'valid' => false,
-            'msg' => 'Current password is incorrect.'
-        ], 422);
+            'valid' => true,
+            'msg' => 'Password changed successfully.'
+        ]);
     }
-
-    // Update the password
-    $user->password = Hash::make($validated['new_password']);
-    $user->save();
-
-    return response()->json([
-        'valid' => true,
-        'msg' => 'Password changed successfully.'
-    ]);
-}
 
     /**
      * Remove the specified resource from storage.
@@ -330,7 +384,7 @@ public function changeUserPassword(Request $request, $id)
     public function checkEmail(Request $request)
     {
         $email = $request->input('email');
-        $exists = DB::table('user_profiles')->where('email', $email)->exists();
+        $exists = DB::table('users')->where('email', $email)->exists();
 
         return response()->json(!$exists); // Only returns true or false
     }
@@ -338,44 +392,9 @@ public function changeUserPassword(Request $request, $id)
     public function checkContact(Request $request)
     {
         $contact = $request->input('contact_no');
-        $exists = DB::table('user_profiles')->where('contact_no', $contact)->exists();
+        $exists = DB::table('users')->where('contact_no', $contact)->exists();
 
         return response()->json(!$exists); // Only returns true or false
-    }
-
-    public function myProfile()
-    {
-        try {
-            $userProfile = DB::table('user_profiles')->where('id', session('id'))->first();
-
-            if (!$userProfile) {
-                return response()->json(['valid' => false, 'msg' => 'User not found'], 200);
-            }
-
-            $fullName = $this->formatFullName(
-                $userProfile->first_name,
-                $userProfile->middle_name,
-                $userProfile->last_name,
-                $userProfile->extension_name
-            );
-
-            $formattedContactNo = $this->formatContactNumber($userProfile->contact_no);
-
-            return response()->json([
-                'valid' => true,
-                'msg' => 'User profile successfully retrieve',
-                'fullname' => $fullName,
-                'first_name' => $userProfile->first_name,
-                'middle_name' => $userProfile->middle_name,
-                'last_name' => $userProfile->last_name,
-                'extension_name' => $userProfile->extension_name,
-                'contact_no' => $formattedContactNo,
-                'email' => $userProfile->email,
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('Failed to retrieve profile: ' . $e->getMessage());
-            return response()->json(['valid' => false, 'msg' => 'Failed to retrieve profile', 'error' => $e->getMessage()], 500);
-        }
     }
 
     /**
@@ -413,4 +432,3 @@ public function changeUserPassword(Request $request, $id)
         return $cleaned;
     }
 }
-

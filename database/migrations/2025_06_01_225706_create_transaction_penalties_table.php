@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->integer('quantity');
-            $table->decimal('amount', 10,2)->default(0.0);
-            $table->enum('status', ['Lost', 'Damaged']);
+            $table->decimal('amount', 10, 2)->default(0.0);
+            $table->enum('status', ['Lost', 'Damaged', 'Late Return']);
             $table->enum('remarks', ['Replace', 'Pay']);
             $table->timestamps();
         });
