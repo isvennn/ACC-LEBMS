@@ -17,7 +17,52 @@ class InventoryController extends Controller
     /**
      * Display a listing of the inventories.
      */
-    public function index(): JsonResponse
+    // public function index(): JsonResponse
+    // {
+    //     try {
+    //         $user = auth()->user();
+    //         $laboratoryId = null;
+
+    //         if (!$user) {
+    //             return response()->json(['valid' => false, 'msg' => 'User profile not found.'], 404);
+    //         }
+
+    //         // Determine laboratory for non-Admin users
+    //         if ($user->role !== 'Admin') {
+    //             $laboratoryId = $user->laboratory_id;
+    //         }
+
+    //         // Fetch grouped inventories
+    //         $inventoriesQuery = Inventory::select(
+    //             'inventory_number',
+    //             DB::raw('MIN(starting_period) as starting_period'),
+    //             DB::raw('MAX(ending_period) as ending_period')
+    //         )
+    //             ->when($laboratoryId, function ($query) use ($laboratoryId) {
+    //                 return $query->where('laboratory_id', $laboratoryId);
+    //             })
+    //             ->groupBy('inventory_number');
+
+    //         $inventories = $inventoriesQuery->get();
+
+    //         $response = $inventories->map(function ($inventory, $index) {
+    //             return [
+    //                 'count' => $index + 1,
+    //                 'inventory_number' => $inventory->inventory_number,
+    //                 'starting_period' => date('F j, Y', strtotime($inventory->starting_period)),
+    //                 'ending_period' => date('F j, Y', strtotime($inventory->ending_period)),
+    //                 'action' => '<button class="btn btn-primary btn-md" onclick="view(\'' . $inventory->inventory_number . '\')" title="View Inventories"><i class="fas fa-eye"></i></button>',
+    //             ];
+    //         });
+
+    //         return response()->json(['valid' => true, 'msg' => 'Inventories fetched successfully', 'data' => $response]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to retrieve inventories: ' . $e->getMessage());
+    //         return response()->json(['valid' => false, 'msg' => 'Failed to retrieve inventories'], 500);
+    //     }
+    // }
+
+    public function index(Request $request): JsonResponse
     {
         try {
             $user = auth()->user();
@@ -27,12 +72,13 @@ class InventoryController extends Controller
                 return response()->json(['valid' => false, 'msg' => 'User profile not found.'], 404);
             }
 
-            // Determine laboratory for non-Admin users
             if ($user->role !== 'Admin') {
                 $laboratoryId = $user->laboratory_id;
             }
 
-            // Fetch grouped inventories
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+
             $inventoriesQuery = Inventory::select(
                 'inventory_number',
                 DB::raw('MIN(starting_period) as starting_period'),
@@ -40,6 +86,12 @@ class InventoryController extends Controller
             )
                 ->when($laboratoryId, function ($query) use ($laboratoryId) {
                     return $query->where('laboratory_id', $laboratoryId);
+                })
+                ->when($startDate, function ($query) use ($startDate) {
+                    return $query->whereDate('starting_period', '>=', $startDate);
+                })
+                ->when($endDate, function ($query) use ($endDate) {
+                    return $query->whereDate('ending_period', '<=', $endDate);
                 })
                 ->groupBy('inventory_number');
 

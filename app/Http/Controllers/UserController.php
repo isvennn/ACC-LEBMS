@@ -43,9 +43,9 @@ class UserController extends Controller
             $actionStatus = '<button onclick="status(' . "'" . $user->id . "'" . ')" type="button" title="Toggle Status" class="btn ' . $statusClass . '"><i class="fas ' . $statusIcon . '"></i></button>';
 
             if ($user->user_role === 'Borrower') {
-                $action = '<div class="d-flex align-items-center">' . $actionUpdate . '&nbsp;' . $actionDelete . '&nbsp;' . $actionStatus . '</div>';
+                $action = '<div class="d-flex align-items-center">' . $actionUpdate . '&nbsp;' . $actionStatus . '</div>';
             } else {
-                $action = '<div class="d-flex align-items-center">' . $actionUpdate . '&nbsp;' . $actionDelete . '</div>';
+                $action = '<div class="d-flex align-items-center">' . $actionUpdate . '</div>';
             }
 
             return [

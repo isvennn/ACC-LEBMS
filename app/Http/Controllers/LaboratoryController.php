@@ -21,7 +21,7 @@ class LaboratoryController extends Controller
         $response = $laboratories->map(function ($laboratory, $index) {
             $actionUpdate = '<button onclick="update(' . "'" . $laboratory->id . "'" . ')" type="button" title="Update" class="btn btn-secondary"><i class="fas fa-edit"></i></button>';
             $actionDelete = '<button onclick="trash(' . "'" . $laboratory->id . "'" . ')" type="button" title="Delete" class="btn btn-danger"><i class="fas fa-trash"></i></button>';
-            $action = $actionUpdate . '&nbsp;' . $actionDelete;
+            $action = $actionUpdate;
 
             return [
                 'count' => $index + 1,

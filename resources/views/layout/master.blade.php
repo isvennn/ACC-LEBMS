@@ -8,7 +8,7 @@
     <meta name="keywords" content="School Name, Student Portal, student portal, abuyog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title') | {{ env('APP_NAME') }} </title>
+    <title>@yield('app-title') | {{ env('APP_NAME') }} </title>
     <link rel="shortcut icon" type="image/png" href="{{ asset('dist/img/acclogo.png') }}">
 
     <!-- Google Font: Source Sans Pro -->
@@ -304,31 +304,6 @@
         </div>
     @endif
 
-    <!-- Font Awesome -->
-    <!-- Make sure Font Awesome is included -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-    {{-- <style>
-    .password-wrapper {
-        position: relative;
-    }
-
-    .password-toggle {
-        position: absolute;
-        top: 55%;
-        right: 15px;
-        transform: translateY(-2%);
-        cursor: pointer;
-        color: #fff
-        display: none; /* hidden until typed */
-        z-index: 2;
-    }
-
-    .form-control {
-        padding-right: 55px; /* make space for icon */
-    }
-</style> --}}
-
     <div id="changePassModal" class="modal fade">
         <div class="modal-dialog">
             <form id="changePassForm" class="modal-content">
@@ -419,8 +394,6 @@
             </div>
         </div>
     </div>
-
-
 
     <!-- jQuery -->
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
@@ -651,22 +624,43 @@
             $('#logout').click(function(event) {
                 event.preventDefault();
 
-                $.ajax({
-                    method: 'POST',
-                    url: '{{ route('logout') }}',
-                    dataType: 'JSON',
-                    cache: false,
-                    success: function(response) {
-                        if (response.valid === true) {
-                            window.location.reload();
-                        } else {
-                            Swal.fire('Error', response.msg, 'error');
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error',
-                            'Something went wrong. Please try again later.',
-                            'error');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to log out?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, log out!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: 'POST',
+                            url: '{{ route('logout') }}',
+                            dataType: 'JSON',
+                            cache: false,
+                            success: function(response) {
+                                if (response.valid === true) {
+                                    Swal.fire({
+                                        title: 'Logged Out',
+                                        text: 'You have been successfully logged out.',
+                                        icon: 'success',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Error', response.msg, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('Error',
+                                    'Something went wrong. Please try again later.',
+                                    'error');
+                            }
+                        });
                     }
                 });
             });

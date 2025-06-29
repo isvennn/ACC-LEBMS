@@ -38,7 +38,7 @@ class ItemController extends Controller
         $response = $items->get()->map(function ($item, $index) {
             $actionUpdate = '<button onclick="update(' . "'" . $item->id . "'" . ')" type="button" title="Update" class="btn btn-secondary"><i class="fas fa-edit"></i></button>';
             $actionDelete = '<button onclick="trash(' . "'" . $item->id . "'" . ')" type="button" title="Delete" class="btn btn-danger"><i class="fas fa-trash"></i></button>';
-            $action = $actionUpdate . $actionDelete;
+            $action = $actionUpdate;
 
             return [
                 'count' => $index + 1,

@@ -484,14 +484,53 @@
         }
 
         // Validate date_of_return to be after date_of_usage
+        // $(document).on('change', 'input[name$="[date_of_usage]"]', function() {
+        //     const row = $(this).closest('tr');
+        //     const dateOfUsage = $(this).val();
+        //     const dateOfReturnInput = row.find('input[name$="[date_of_return]"]');
+        //     if (dateOfUsage) {
+        //         dateOfReturnInput.attr('min', dateOfUsage);
+        //         if (dateOfReturnInput.val() <= dateOfUsage) {
+        //             dateOfReturnInput.val('');
+        //         }
+        //     }
+        // });
         $(document).on('change', 'input[name$="[date_of_usage]"]', function() {
             const row = $(this).closest('tr');
             const dateOfUsage = $(this).val();
             const dateOfReturnInput = row.find('input[name$="[date_of_return]"]');
+
             if (dateOfUsage) {
+                const usageDate = new Date(dateOfUsage);
+                const minReturnDate = new Date(usageDate);
+                minReturnDate.setDate(minReturnDate.getDate() + 2);
+
+                const formattedMinReturnDate = minReturnDate.toISOString().split('T')[0];
                 dateOfReturnInput.attr('min', dateOfUsage);
-                if (dateOfReturnInput.val() <= dateOfUsage) {
-                    dateOfReturnInput.val('');
+
+                const currentReturnDate = new Date(dateOfReturnInput.val());
+                if (!dateOfReturnInput.val() || currentReturnDate <= usageDate) {
+                    dateOfReturnInput.val(formattedMinReturnDate);
+                }
+            }
+        });
+
+        $(document).on('change', 'input[name$="[date_of_return]"]', function() {
+            const row = $(this).closest('tr');
+            const dateOfReturn = $(this).val();
+            const dateOfUsageInput = row.find('input[name$="[date_of_usage]"]');
+
+            if (dateOfReturn) {
+                const returnDate = new Date(dateOfReturn);
+                const suggestedUsageDate = new Date(returnDate);
+                suggestedUsageDate.setDate(suggestedUsageDate.getDate() - 2);
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Normalize today
+
+                if (suggestedUsageDate >= today) {
+                    const formattedSuggestedUsageDate = suggestedUsageDate.toISOString().split('T')[0];
+                    dateOfUsageInput.val(formattedSuggestedUsageDate).trigger('change');
                 }
             }
         });
