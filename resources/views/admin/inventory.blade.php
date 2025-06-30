@@ -10,12 +10,12 @@
 @endsection
 @section('content')
     <div id="inventoryList">
-        <div class="mb-3 d-flex gap-2">
+        {{-- <div class="mb-3 d-flex gap-2">
             <input type="date" id="filterStartDate" class="form-control" placeholder="Start Date">
             <input type="date" id="filterEndDate" class="form-control" placeholder="End Date">
             <button id="applyDateFilter" class="btn btn-sm btn-primary">Filter</button>
             <button id="resetDateFilter" class="btn btn-sm btn-secondary">Reset</button>
-        </div>
+        </div> --}}
         <table id="table1" class="table table-bordered table-hover">
             <thead>
                 <tr>

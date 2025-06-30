@@ -161,23 +161,50 @@
         }
 
         function status(id) {
-            $.ajax({
-                method: 'PUT',
-                url: `/users/status/${id}`,
-                dataType: 'JSON',
-                cache: false,
-                success: function(response) {
-                    if (response.valid) {
-                        table1.ajax.reload(null, false);
-                        showSuccessMessage(response.msg);
-                    }
+            Swal.fire({
+                title: 'Are you sure you want to change this user\'s status?',
+                text: "This will update the user’s active/inactive state.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, change it',
+                cancelButtonText: 'Cancel',
+                reverseButtons: false,
+                allowOutsideClick: false,
+                showClass: {
+                    popup: 'animated fadeInDown'
                 },
-                error: function(jqXHR) {
-                    showErrorMessage(jqXHR.responseJSON && jqXHR.responseJSON.msg ? jqXHR.responseJSON.msg :
-                        "An unexpected error occurred. Please try again.");
+                hideClass: {
+                    popup: 'animated fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        method: 'PUT',
+                        url: `/users/status/${id}`,
+                        dataType: 'JSON',
+                        cache: false,
+                        success: function(response) {
+                            if (response.valid) {
+                                table1.ajax.reload(null, false);
+                                showSuccessMessage(response.msg);
+                            } else {
+                                showErrorMessage(response.msg);
+                            }
+                        },
+                        error: function(jqXHR) {
+                            showErrorMessage(
+                                jqXHR.responseJSON && jqXHR.responseJSON.msg
+                                    ? jqXHR.responseJSON.msg
+                                    : "An unexpected error occurred. Please try again."
+                            );
+                        }
+                    });
                 }
             });
         }
+
 
         function trash(id) {
             $.ajax({
