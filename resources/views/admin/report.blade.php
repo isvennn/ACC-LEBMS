@@ -76,8 +76,6 @@
                     <div class="col-md-3 form-group d-flex align-items-end">
                         <button type="submit" class="btn btn-primary mr-2"><i class="fas fa-search"></i>
                             Generate</button>
-                        <button type="button" id="exportExcel" class="btn btn-success" disabled><i
-                                class="fas fa-file-excel"></i> Export</button>
                     </div>
                 </div>
             </form>
@@ -299,7 +297,52 @@
                             info: true,
                             autoWidth: true,
                             responsive: true,
-                            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                            // dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+
+                            dom: '<"d-flex justify-content-between align-items-center"<"search-box"f><"custom-button"B>>rtip',
+                            buttons: [{
+                                extend: "print",
+                                text: '<i class="fa fa-print"></i> Print',
+                                className: "btn btn-info btn-md",
+                                titleAttr: "Print data",
+                                title: '',
+                                customize: function(win) {
+                                    $(win.document.body).prepend(`
+                                            <div class="container">
+                                                <div class="header">
+                                                    <div class="logo">
+                                                        <img src="{{ asset('dist/img/acclogo.png') }}" style="height: 150px; width: 150px">
+                                                    </div>
+                                                    <div class="title">
+                                                        <h3>Abuyog Community College</h3>
+                                                        <h3>Laboratory</h3>
+                                                        <h3>Equipment Borrowing and Management System</h3>
+                                                        <h3>Report List</h3>
+                                                    </div>
+                                                    <div class="logo">
+                                                        <img src="{{ asset('dist/img/acclogo.png') }}" style="height: 150px; width: 150px">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `);
+                                    $(win.document.head).append(`
+                                            <style type="text/css" media="print">
+                                                @page { size: auto; margin: 25px; }
+                                            </style>
+                                            <style type="text/css" media="all">
+                                                .container { display: flex; flex-direction: column; align-items: center; }
+                                                .header { display: flex; justify-content: space-between; width: 100%; padding: 10px; }
+                                                .title { text-align: center; }
+                                                .content { display: flex; justify-content: space-between; padding: 20px; }
+                                                table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+                                                table th, table td { padding: 8px; text-align: center; color: black; vertical-align: middle; box-sizing: border-box; border: 1px solid black; }
+                                            </style>
+                                        `);
+                                    $(win.document.body).find('table')
+                                        .addClass('compact')
+                                        .css('font-size', 'inherit');
+                                }
+                            }]
                         });
 
                         $('#exportExcel').prop('disabled', false);

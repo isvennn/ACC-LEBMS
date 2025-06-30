@@ -19,6 +19,7 @@
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Status</th>
+                    <th>Amount</th>
                     <th>Remarks</th>
                     <th>Laboratory</th>
                 </tr>
@@ -42,6 +43,7 @@
                 { data: 'item_name' },
                 { data: 'quantity' },
                 { data: 'status' },
+                { data: 'amount' },
                 { data: 'remarks' },
                 { data: 'laboratory' },
             ],

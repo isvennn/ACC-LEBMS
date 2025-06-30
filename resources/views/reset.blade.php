@@ -223,7 +223,7 @@
                         $('#response-msg').html('<div class="alert alert-success">' + response
                             .message + '</div>');
                         submitBtn.prop('disabled', false).val('Reset Password');
-                        setTimeout(() => window.location.href = '/login', 2000);
+                        setTimeout(() => window.location.href = '/', 2000);
                     },
                     error: function(xhr) {
                         submitBtn.prop('disabled', false).val('Reset Password');

@@ -101,8 +101,21 @@ class TransactionController extends Controller
                         $transaction->getRawOriginal('date_of_return') . ' ' . $transaction->time_of_return
                     );
 
+                    // // Add grace period (e.g., 2 days)
+                    // $gracePeriodDays = 2; // Adjust this value as needed
+                    // $fineStartDateTime = $returnDateTime->copy()->addDays($gracePeriodDays);
+
+                    // $now = now();
+                    // $fine = 0;
+
+                    // // Only calculate fine if current time is after the fine start date
+                    // if ($now->greaterThan($fineStartDateTime)) {
+                    //     // Calculate hours late after grace period
+                    //     $hoursLate = $fineStartDateTime->diffInHours($now); // Reverse order to ensure positive value
+                    //     $fine = $hoursLate * 5; // 5 currency units per hour late
+                    // }
                     // Add grace period (e.g., 2 days)
-                    $gracePeriodDays = 2; // Adjust this value as needed
+                    $gracePeriodDays = 2;
                     $fineStartDateTime = $returnDateTime->copy()->addDays($gracePeriodDays);
 
                     $now = now();
@@ -110,9 +123,9 @@ class TransactionController extends Controller
 
                     // Only calculate fine if current time is after the fine start date
                     if ($now->greaterThan($fineStartDateTime)) {
-                        // Calculate hours late after grace period
-                        $hoursLate = $fineStartDateTime->diffInHours($now); // Reverse order to ensure positive value
-                        $fine = $hoursLate * 5; // 5 currency units per hour late
+                        // Calculate days late after grace period
+                        $daysLate = $fineStartDateTime->diffInDays($now); // ensures whole days late
+                        $fine = $daysLate * 20; // 20 pesos per day late
                     }
 
                     Log::info('Fine: ' . $fine . ', Now: ' . $now->toDateTimeString() . ', FineStartDateTime: ' . $fineStartDateTime->toDateTimeString());

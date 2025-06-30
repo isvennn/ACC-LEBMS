@@ -39,6 +39,7 @@ class PenaltyController extends Controller
                     'quantity' => $penalty->quantity,
                     'status' => $penalty->status,
                     'remarks' => $penalty->remarks,
+                    'amount' => $penalty->amount,
                     'laboratory' => optional($penalty->item->category->laboratory)->name ?? 'N/A',
                 ];
             });
