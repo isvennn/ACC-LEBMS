@@ -166,69 +166,129 @@
         }
 
         $('#addForm').submit(function(event) {
-            event.preventDefault();
+                event.preventDefault();
+                $('#addForm').find('button[type=submit]').attr('disabled', true);
 
-            $.ajax({
-                method: 'POST',
-                url: '/items',
-                data: $('#addForm').serialize(),
-                dataType: 'JSON',
-                cache: false,
-                success: function(response) {
-                    if (response.valid) {
-                        $('#addForm').trigger('reset');
-                        $("select").trigger("chosen:updated");
-                        showSuccessMessage(response.msg);
-                        $('#addModal').modal('hide');
-                        table1.ajax.reload(null, false);
-                    }
-                },
-                error: function(jqXHR) {
-                    if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
-                        let errors = jqXHR.responseJSON.errors;
-                        let errorMsg = `${jqXHR.responseJSON.msg}\n`;
-                        for (const [field, messages] of Object.entries(errors)) {
-                            errorMsg += `- ${messages.join(', ')}\n`;
+                if ($('#addForm').valid()) {
+                    $('#addModal').modal('hide');
+                    Swal.fire({
+                        title: 'Do you want to add this item?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        reverseButtons: false,
+                        allowOutsideClick: false,
+                        showClass: {
+                            popup: 'animated fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animated fadeOutUp'
                         }
-                        showErrorMessage(errorMsg);
-                    } else {
-                        showErrorMessage("An unexpected error occurred. Please try again.");
-                    }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Serialize form data and manually append the `user_role` field
+                            let formData = new FormData($("#addForm")[0]);
+
+                            $.ajax({
+                                method: 'POST',
+                                url: `/items`,
+                                data: formData,
+                                contentType: false,
+                                processData: false,
+                                enctype: 'multipart/form-data',
+                                dataType: 'JSON',
+                                cache: false,
+                                success: function(response) {
+                                    if (response.valid) {
+                                        $('#addForm')[0].reset();
+                                        showSuccessMessage(response.msg);
+                                        table1.ajax.reload(null, false);
+                                    } else {
+                                        showErrorMessage(response.msg);
+                                    }
+                                },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    if (jqXHR.responseJSON && jqXHR.responseJSON
+                                        .error) {
+                                        var errors = jqXHR.responseJSON.error;
+                                        var errorMsg = "Error submitting data: " +
+                                            errors + ". ";
+                                        showErrorMessage(errorMsg);
+                                    } else {
+                                        showErrorMessage(
+                                            'Something went wrong! Please try again later.'
+                                        );
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
+
+                $('#addForm').find('button[type=submit]').removeAttr('disabled');
             });
-        });
 
         $('#updateForm').submit(function(event) {
-            event.preventDefault();
-
-            $.ajax({
-                method: 'PUT',
-                url: `/items/${itemID}`,
-                data: $('#updateForm').serialize(),
-                dataType: 'JSON',
-                cache: false,
-                success: function(response) {
-                    if (response.valid) {
-                        $('#updateForm').trigger('reset');
-                        $("select").trigger("chosen:updated");
-                        showSuccessMessage(response.msg);
-                        $('#updateModal').modal('hide');
-                        table1.ajax.reload(null, false);
-                    }
-                },
-                error: function(jqXHR) {
-                    if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
-                        let errors = jqXHR.responseJSON.errors;
-                        let errorMsg = `${jqXHR.responseJSON.msg}\n`;
-                        for (const [field, messages] of Object.entries(errors)) {
-                            errorMsg += `- ${messages.join(', ')}\n`;
+                event.preventDefault();
+                $('#updateForm').find('button[type=submit]').attr('disabled', true);
+                if ($('#updateForm').valid()) {
+                    $('#updateModal').modal('hide');
+                    Swal.fire({
+                        title: 'Do you want to save the updated data?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        reverseButtons: false,
+                        allowOutsideClick: false,
+                        showClass: {
+                            popup: 'animated fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animated fadeOutUp'
                         }
-                        showErrorMessage(errorMsg);
-                    } else {
-                        showErrorMessage("An unexpected error occurred. Please try again.");
-                    }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                method: 'PUT',
+                                url: `/items/${itemID}`,
+                                data: $('#updateForm').serialize(),
+                                dataType: 'JSON',
+                                cache: false,
+                                success: function(response) {
+                                    if (response.valid) {
+                                        $('#updateForm')[0].reset();
+                                        showSuccessMessage(response.msg);
+                                        table1.ajax.reload(null, false);
+                                    } else {
+                                        showErrorMessage(response.msg);
+                                    }
+                                },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    if (jqXHR.responseJSON && jqXHR.responseJSON
+                                        .error) {
+                                        var errors = jqXHR.responseJSON.error;
+                                        var errorMsg = "Error submitting data: " +
+                                            errors + ". ";
+                                        showErrorMessage(errorMsg);
+                                    } else {
+                                        showErrorMessage(
+                                            'Something went wrong! Please try again later.'
+                                        );
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
+                $('#updateForm').find('button[type=submit]').removeAttr('disabled');
             });
-        });
+
+
     </script>
 @endsection

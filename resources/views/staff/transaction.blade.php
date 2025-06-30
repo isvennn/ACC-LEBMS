@@ -297,58 +297,138 @@
         }
 
         function confirmTransaction(id) {
-            $.ajax({
-                method: 'POST',
-                url: `/transactions/${id}/confirm`,
-                dataType: 'JSON',
-                cache: false,
-                success: function(response) {
-                    if (response.valid) {
-                        table1.ajax.reload(null, false);
-                        showSuccessMessage(response.msg);
-                    }
+            Swal.fire({
+                title: 'Are you sure you want to confirm this transaction?',
+                text: "This will mark the transaction as confirmed.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, confirm it',
+                cancelButtonText: 'Cancel',
+                reverseButtons: false,
+                allowOutsideClick: false,
+                showClass: {
+                    popup: 'animated fadeInDown'
                 },
-                error: function(jqXHR) {
-                    showErrorMessage(jqXHR.responseJSON && jqXHR.responseJSON.msg ? jqXHR.responseJSON.msg :
-                        "An unexpected error occurred. Please try again.");
+                hideClass: {
+                    popup: 'animated fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        method: 'POST',
+                        url: `/transactions/${id}/confirm`,
+                        dataType: 'JSON',
+                        cache: false,
+                        success: function(response) {
+                            if (response.valid) {
+                                table1.ajax.reload(null, false);
+                                showSuccessMessage(response.msg);
+                            } else {
+                                showErrorMessage(response.msg);
+                            }
+                        },
+                        error: function(jqXHR) {
+                            showErrorMessage(
+                                jqXHR.responseJSON && jqXHR.responseJSON.msg
+                                    ? jqXHR.responseJSON.msg
+                                    : "An unexpected error occurred. Please try again."
+                            );
+                        }
+                    });
                 }
             });
         }
+
 
         function rejectTransaction(id) {
-            $.ajax({
-                method: 'POST',
-                url: `/transactions/${id}/reject`,
-                dataType: 'JSON',
-                cache: false,
-                success: function(response) {
-                    if (response.valid) {
-                        table1.ajax.reload(null, false);
-                        showSuccessMessage(response.msg);
-                    }
+            Swal.fire({
+                title: 'Are you sure you want to reject this transaction?',
+                text: "This action cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, reject it',
+                cancelButtonText: 'Cancel',
+                reverseButtons: false,
+                allowOutsideClick: false,
+                showClass: {
+                    popup: 'animated fadeInDown'
                 },
-                error: function(jqXHR) {
-                    showErrorMessage(jqXHR.responseJSON && jqXHR.responseJSON.msg ? jqXHR.responseJSON.msg :
-                        "An unexpected error occurred. Please try again.");
+                hideClass: {
+                    popup: 'animated fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        method: 'POST',
+                        url: `/transactions/${id}/reject`,
+                        dataType: 'JSON',
+                        cache: false,
+                        success: function(response) {
+                            if (response.valid) {
+                                table1.ajax.reload(null, false);
+                                showSuccessMessage(response.msg);
+                            } else {
+                                showErrorMessage(response.msg);
+                            }
+                        },
+                        error: function(jqXHR) {
+                            showErrorMessage(
+                                jqXHR.responseJSON && jqXHR.responseJSON.msg
+                                    ? jqXHR.responseJSON.msg
+                                    : "An unexpected error occurred. Please try again."
+                            );
+                        }
+                    });
                 }
             });
         }
 
+
         function releaseTransaction(id) {
-            $.ajax({
-                method: 'POST',
-                url: `/transactions/${id}/release`,
-                dataType: 'JSON',
-                cache: false,
-                success: function(response) {
-                    if (response.valid) {
-                        table1.ajax.reload(null, false);
-                        showSuccessMessage(response.msg);
-                    }
+            Swal.fire({
+                title: 'Are you sure you want to release this transaction?',
+                text: "Once released, it will be processed accordingly.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, release it',
+                cancelButtonText: 'Cancel',
+                reverseButtons: false,
+                allowOutsideClick: false,
+                showClass: {
+                    popup: 'animated fadeInDown'
                 },
-                error: function(jqXHR) {
-                    showErrorMessage(jqXHR.responseJSON && jqXHR.responseJSON.msg ? jqXHR.responseJSON.msg :
-                        "An unexpected error occurred. Please try again.");
+                hideClass: {
+                    popup: 'animated fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        method: 'POST',
+                        url: `/transactions/${id}/release`,
+                        dataType: 'JSON',
+                        cache: false,
+                        success: function(response) {
+                            if (response.valid) {
+                                table1.ajax.reload(null, false);
+                                showSuccessMessage(response.msg);
+                            } else {
+                                showErrorMessage(response.msg);
+                            }
+                        },
+                        error: function(jqXHR) {
+                            showErrorMessage(
+                                jqXHR.responseJSON && jqXHR.responseJSON.msg
+                                    ? jqXHR.responseJSON.msg
+                                    : "An unexpected error occurred. Please try again."
+                            );
+                        }
+                    });
                 }
             });
         }
@@ -499,102 +579,156 @@
         // Form submission
         $('#addForm').submit(function(event) {
             event.preventDefault();
+            $('#addForm').find('button[type=submit]').attr('disabled', true);
 
-            $.ajax({
-                method: 'POST',
-                url: '/transactions',
-                data: $(this).serialize(),
-                dataType: 'JSON',
-                cache: false,
-                success: function(response) {
-                    if (response.valid) {
-                        $('#addForm').trigger('reset');
-                        $('#itemsTableBody').html(`
-                            <tr class="item-row">
-                                <td>
-                                    <select class="form-select chosen-select item-select" name="items[0][item_id]" data-placeholder="Select Item" required>
-                                        <option value=""></option>
-                                        @foreach (\App\Models\Item::all() as $item)
-                                            <option value="{{ $item->id }}">{{ $item->item_name }} ({{ $item->current_qty }} available)</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="date" class="form-control" name="items[0][date_of_usage]" required min="{{ date('Y-m-d') }}">
-                                </td>
-                                <td>
-                                    <input type="date" class="form-control" name="items[0][date_of_return]" required>
-                                </td>
-                                <td>
-                                    <input type="time" class="form-control" name="items[0][time_of_return]" required>
-                                </td>
-                                <td>
-                                    <input type="number" class="form-control" name="items[0][reserve_quantity]" min="1" required>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm remove-row" disabled><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `);
-                        rowCount = 1;
-                        $('.chosen-select').chosen('destroy').chosen({
-                            width: '100%',
-                            allow_single_deselect: true,
-                            placeholder_text_single: 'Select an option'
+            if ($('#addForm').valid()) {
+                Swal.fire({
+                    title: 'Do you want to submit this transaction?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, submit it',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: false,
+                    allowOutsideClick: false,
+                    showClass: {
+                        popup: 'animated fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animated fadeOutUp'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: 'POST',
+                            url: '/transactions',
+                            data: $('#addForm').serialize(),
+                            dataType: 'JSON',
+                            cache: false,
+                            success: function(response) {
+                                if (response.valid) {
+                                    $('#addForm').trigger('reset');
+                                    $('#itemsTableBody').html(`
+                                        <tr class="item-row">
+                                            <td>
+                                                <select class="form-select chosen-select item-select" name="items[0][item_id]" data-placeholder="Select Item" required>
+                                                    <option value=""></option>
+                                                    @foreach (\App\Models\Item::all() as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->item_name }} ({{ $item->current_qty }} available)</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control" name="items[0][date_of_usage]" required min="{{ date('Y-m-d') }}">
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control" name="items[0][date_of_return]" required>
+                                            </td>
+                                            <td>
+                                                <input type="time" class="form-control" name="items[0][time_of_return]" required>
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control" name="items[0][reserve_quantity]" min="1" required>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger btn-sm remove-row" disabled><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    `);
+                                    rowCount = 1;
+                                    $('.chosen-select').chosen('destroy').chosen({
+                                        width: '100%',
+                                        allow_single_deselect: true,
+                                        placeholder_text_single: 'Select an option'
+                                    });
+                                    showSuccessMessage(response.msg);
+                                    $('#transaction-table').show();
+                                    $('#transaction-add').hide();
+                                    table1.ajax.reload(null, false);
+                                } else {
+                                    showErrorMessage(response.msg);
+                                }
+                            },
+                            error: function(jqXHR) {
+                                if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
+                                    let errors = jqXHR.responseJSON.errors;
+                                    let errorMsg = `${jqXHR.responseJSON.msg}\n`;
+                                    for (const [field, messages] of Object.entries(errors)) {
+                                        errorMsg += `- ${messages.join(', ')}\n`;
+                                    }
+                                    showErrorMessage(errorMsg);
+                                } else {
+                                    showErrorMessage(jqXHR.responseJSON?.msg ||
+                                        "An unexpected error occurred. Please try again.");
+                                }
+                            }
                         });
-                        showSuccessMessage(response.msg);
-                        $('#transaction-table').show();
-                        $('#transaction-add').hide();
-                        table1.ajax.reload(null, false);
                     }
-                },
-                error: function(jqXHR) {
-                    if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
-                        let errors = jqXHR.responseJSON.errors;
-                        let errorMsg = `${jqXHR.responseJSON.msg}\n`;
-                        for (const [field, messages] of Object.entries(errors)) {
-                            errorMsg += `- ${messages.join(', ')}\n`;
-                        }
-                        showErrorMessage(errorMsg);
-                    } else {
-                        showErrorMessage(jqXHR.responseJSON?.msg ||
-                            "An unexpected error occurred. Please try again.");
-                    }
-                }
-            });
+                });
+            }
+
+            $('#addForm').find('button[type=submit]').removeAttr('disabled');
         });
 
         $('#updateForm').submit(function(event) {
             event.preventDefault();
+            $('#updateForm').find('button[type=submit]').attr('disabled', true);
 
-            $.ajax({
-                method: 'PUT',
-                url: `/transactions/${transactionID}`,
-                data: $(this).serialize(),
-                dataType: 'JSON',
-                cache: false,
-                success: function(response) {
-                    if (response.valid) {
-                        $('#updateForm').trigger('reset');
-                        $('.chosen-select').trigger('chosen:updated');
-                        showSuccessMessage(response.msg);
-                        $('#updateModal').modal('hide');
-                        table1.ajax.reload(null, false);
+            if ($('#updateForm').valid()) {
+                Swal.fire({
+                    title: 'Do you want to save the changes?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, save it',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: false,
+                    allowOutsideClick: false,
+                    showClass: {
+                        popup: 'animated fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animated fadeOutUp'
                     }
-                },
-                error: function(jqXHR) {
-                    if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
-                        let errors = jqXHR.responseJSON.errors;
-                        let errorMsg = `${jqXHR.responseJSON.msg}\n`;
-                        for (const [field, messages] of Object.entries(errors)) {
-                            errorMsg += `- ${messages.join(', ')}\n`;
-                        }
-                        showErrorMessage(errorMsg);
-                    } else {
-                        showErrorMessage("An unexpected error occurred. Please try again.");
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: 'PUT',
+                            url: `/transactions/${transactionID}`,
+                            data: $('#updateForm').serialize(),
+                            dataType: 'JSON',
+                            cache: false,
+                            success: function(response) {
+                                if (response.valid) {
+                                    $('#updateForm').trigger('reset');
+                                    $('.chosen-select').trigger('chosen:updated');
+                                    showSuccessMessage(response.msg);
+                                    $('#updateModal').modal('hide');
+                                    table1.ajax.reload(null, false);
+                                } else {
+                                    showErrorMessage(response.msg);
+                                }
+                            },
+                            error: function(jqXHR) {
+                                if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
+                                    let errors = jqXHR.responseJSON.errors;
+                                    let errorMsg = `${jqXHR.responseJSON.msg}\n`;
+                                    for (const [field, messages] of Object.entries(errors)) {
+                                        errorMsg += `- ${messages.join(', ')}\n`;
+                                    }
+                                    showErrorMessage(errorMsg);
+                                } else {
+                                    showErrorMessage("An unexpected error occurred. Please try again.");
+                                }
+                            }
+                        });
                     }
-                }
-            });
+                });
+            }
+
+            $('#updateForm').find('button[type=submit]').removeAttr('disabled');
         });
     </script>
 @endsection
