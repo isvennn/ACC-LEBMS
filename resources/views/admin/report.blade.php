@@ -191,7 +191,8 @@
                                     data: null,
                                     title: 'User',
                                     render: function(data) {
-                                        return data.user ? data.user.full_name : 'N/A';
+                                        return data.first_name ? data.first_name + ' ' +
+                                            data.last_name : 'N/A';
                                     }
                                 },
                                 {
@@ -204,11 +205,39 @@
                                 },
                                 {
                                     data: 'date_of_usage',
-                                    title: 'Date of Usage'
+                                    title: 'Date of Usage',
+                                    render: function(data) {
+                                        console.log(data);
+
+                                        if (!data) return 'N/A';
+
+                                        const date = new Date(data);
+                                        const options = {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        };
+                                        return date.toLocaleDateString('en-US',
+                                            options);
+                                    }
                                 },
                                 {
                                     data: 'date_of_return',
-                                    title: 'Date of Return'
+                                    title: 'Date of Return',
+                                    render: function(data) {
+                                        console.log(data);
+
+                                        if (!data) return 'N/A';
+
+                                        const date = new Date(data);
+                                        const options = {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        };
+                                        return date.toLocaleDateString('en-US',
+                                            options);
+                                    }
                                 },
                                 {
                                     data: 'time_of_return',
@@ -232,7 +261,8 @@
                                     data: null,
                                     title: 'User',
                                     render: function(data) {
-                                        return data.user ? data.user.full_name : 'N/A';
+                                        return data.first_name ? data.first_name + ' ' +
+                                            data.last_name : 'N/A';
                                     }
                                 },
                                 {
@@ -265,7 +295,8 @@
                                     data: null,
                                     title: 'User',
                                     render: function(data) {
-                                        return data.user ? data.user.full_name : 'N/A';
+                                        return data.first_name ? data.first_name + ' ' +
+                                            data.last_name : 'N/A';
                                     }
                                 },
                                 {
@@ -274,7 +305,21 @@
                                 },
                                 {
                                     data: 'date_of_return',
-                                    title: 'Date of Return'
+                                    title: 'Date of Return',
+                                    render: function(data) {
+                                        console.log(data);
+
+                                        if (!data) return 'N/A';
+
+                                        const date = new Date(data);
+                                        const options = {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        };
+                                        return date.toLocaleDateString('en-US',
+                                            options);
+                                    }
                                 },
                                 {
                                     data: 'status',

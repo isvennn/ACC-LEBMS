@@ -672,14 +672,21 @@ class TransactionController extends Controller
             $returnDateTime = Carbon::parse(
                 $transaction->getRawOriginal('date_of_return') . ' ' . $transaction->time_of_return
             );
+            // $gracePeriodDays = 2;
+            // $fineStartDateTime = $returnDateTime->copy()->addDays($gracePeriodDays);
+            // $now = now();
+            // $fine = 0;
             $gracePeriodDays = 2;
             $fineStartDateTime = $returnDateTime->copy()->addDays($gracePeriodDays);
+
             $now = now();
             $fine = 0;
 
+            // Only calculate fine if current time is after the fine start date
             if ($now->greaterThan($fineStartDateTime)) {
-                $hoursLate = $fineStartDateTime->diffInHours($now);
-                $fine = $hoursLate * 5; // ₱5 per hour late
+                // Calculate days late after grace period
+                $daysLate = $fineStartDateTime->diffInDays($now); // ensures whole days late
+                $fine = $daysLate * 20; // 20 pesos per day late
 
                 if ($fine > 0) {
                     TransactionPenalty::create([
@@ -693,6 +700,11 @@ class TransactionController extends Controller
                     ]);
                 }
             }
+
+            // if ($now->greaterThan($fineStartDateTime)) {
+            //     $hoursLate = $fineStartDateTime->diffInHours($now);
+            //     $fine = $hoursLate * 5; // ₱5 per hour late
+            // }
 
             // Process each return status
             foreach ($validated['returns'] as $return) {

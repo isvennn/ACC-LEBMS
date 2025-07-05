@@ -284,17 +284,17 @@
                             <div class="card-footer">
                                 <div class="row">
                                     <p class="form-control col-lg-12">First Name: <span class="text-lime"
-                                            id="pFirstName"></span></p>
+                                            id="pFirstName">{{auth()->user()->first_name}}</span></p>
                                     <p class="form-control col-lg-12">Middle Name: <span class="text-lime"
-                                            id="pMiddleName"></span></p>
+                                            id="pMiddleName">{{auth()->user()->middle_name}}</span></p>
                                     <p class="form-control col-lg-12">Last Name: <span class="text-lime"
-                                            id="pLastName"></span></p>
+                                            id="pLastName">{{auth()->user()->last_name}}</span></p>
                                     <p class="form-control col-lg-12">Extension Name: <span class="text-lime"
-                                            id="pExtensionName"></span></p>
+                                            id="pExtensionName">{{auth()->user()->extension_name}}</span></p>
                                     <p class="form-control col-lg-12">Email Address: <span class="text-lime"
-                                            id="pEmail"></span></p>
+                                            id="pEmail">{{auth()->user()->email}}</span></p>
                                     <p class="form-control col-lg-12">Contact No: <span class="text-lime"
-                                            id="pContactNo"></span></p>
+                                            id="pContactNo">{{auth()->user()->contact_no}}</span></p>
                                 </div>
                             </div>
                         </div>
